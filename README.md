@@ -23,18 +23,18 @@ O jogo termina com a **vitória** da equipa se todos os ataques forem contidos c
 
 ##  Funcionalidades Principais
 
-* ** Grid de Servidores Interativo (3x3):** O campo de batalha digital onde a ação acontece. (RF02)
-* ** Geração Aleatória de Ataques:** Diferentes tipos de ciberataques (vírus, ransomware, DDoS, phishing) surgem a cada rodada, mantendo a jogabilidade dinâmica e desafiadora. (RF03)
-* **🛠 Ações Estratégicas dos Jogadores:**
+* ** Grid de Servidores Interativo (3x3):** O campo de batalha digital onde a ação acontece. 
+* ** Geração Aleatória de Ataques:** Diferentes tipos de ciberataques (vírus, ransomware, DDoS, phishing) surgem a cada rodada, mantendo a jogabilidade dinâmica e desafiadora. 
+* ** Ações Estratégicas dos Jogadores:**
     * Isolar Servidor
     * Instalar Firewall
     * Analisar Ameaça
-    * (Outras ações que vocês implementarem) (RF04)
-* ** Controlo de Servidores Comprometidos:** Um indicador visual e lógico do quão perto a rede está do colapso. (RF05)
-* ** Condições de Vitória e Derrota:** Objetivos claros para o sucesso ou fracasso da equipa. (RF06)
-* ** Multiplayer Cooperativo (Planeado):** Suporte para 2 a 4 jogadores trabalhando juntos. (RF01 - Indicar se já está implementado ou em desenvolvimento)
-* ** Acessível via Navegador:** Jogue em qualquer lugar, a qualquer hora. (RNF01)
-* ** Código Aberto:** Licenciado sob MIT, incentivando a colaboração e o aprendizado. (RNF03)
+    * (Outras ações que vocês implementarem) 
+* ** Controlo de Servidores Comprometidos:** Um indicador visual e lógico do quão perto a rede está do colapso. 
+* ** Condições de Vitória e Derrota:** Objetivos claros para o sucesso ou fracasso da equipa. 
+* ** Multiplayer Cooperativo (Planeado):** Suporte para 2 a 4 jogadores trabalhando juntos. 
+* ** Acessível via Navegador:** Jogue em qualquer lugar, a qualquer hora. 
+* ** Código Aberto:** Licenciado sob MIT, incentivando a colaboração e o aprendizado. 
 
 ---
 
