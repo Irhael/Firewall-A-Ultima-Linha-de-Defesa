@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import NodeServidor from '../NodeServidor/NodeServidor'; // Caminho atualizado
 import styles from './GridServidores.module.css'; 
 
-const TOTAL_NOS = 9; 
+const TOTAL_NODES = 9; 
 
 function GridServidores() {
     const [nodes, setNodes] = useState([]); 
@@ -12,7 +12,7 @@ function GridServidores() {
     useEffect(() => {
         const nodesIniciais = [];
         const statusIniciais = ['seguro', 'seguro', 'sobAtaque', 'seguro', 'comprometido', 'seguro', 'isolado', 'seguro', 'sobAtaque'];
-        for (let i = 1; i <= TOTAL_NOS; i++) {
+        for (let i = 1; i <= TOTAL_NODES; i++) {
             nodesIniciais.push({
                 id: i,
                 nome: `SRV-${String(i).padStart(2, '0')}`,
