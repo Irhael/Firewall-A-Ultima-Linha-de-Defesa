@@ -1,4 +1,4 @@
-#  Firewall: A Última Linha de Defesa 🛡️
+#  Firewall: A Última Linha de Defesa 
 
 ##  Visão Geral do Jogo
 
