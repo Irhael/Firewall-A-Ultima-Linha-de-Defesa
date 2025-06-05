@@ -61,3 +61,15 @@
     animation: pulseAttack 1.5s infinite ease-in-out; /* Defina @keyframes pulseAttack */
 }
 .underAttack .nodeStatusIcon, .underAttack .nodeLabel { color: var(--color-attack); }
+
+.compromised {
+    border-color: var(--color-compromised);
+    box-shadow: 0 0 15px var(--color-compromised-glow);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--node-bg-color), var(--node-bg-color) 5px,
+        rgba(255, 56, 100, 0.1) 5px, rgba(255, 56, 100, 0.1) 10px
+    );
+}
+.compromised .nodeStatusIcon, .compromised .nodeLabel { color: var(--color-compromised); }
+
