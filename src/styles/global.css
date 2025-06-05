@@ -1,0 +1,47 @@
+:root {
+    --cor-fundo: #101214;                    
+    --cor-fundo-no: #1a1d21;               
+    --cor-borda: #33373d;                  
+    --cor-texto: #c8c8c8;                  
+    --fonte-familia: 'Roboto Mono', monospace; 
+
+    --cor-seguro: #00ff9b;                 
+    --cor-seguro-brilho: rgba(0, 255, 155, 0.5); 
+    --cor-ataque: #ffd900;                 
+    --cor-ataque-brilho: rgba(255, 217, 0, 0.5); 
+    --cor-comprometido: #ff3864;           
+    --cor-comprometido-brilho: rgba(255, 56, 100, 0.5); 
+    --cor-isolado: #00b8ff;                
+    --cor-isolado-brilho: rgba(0, 184, 255, 0.5); 
+    --cor-selecionado: #ffffff;            
+    --cor-selecionado-brilho: rgba(255, 255, 255, 0.7); 
+}
+
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: var(--fonte-familia);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+.titulo-cabecalho { 
+    font-size: 2rem;
+    color: var(--cor-seguro);
+    text-shadow: 0 0 10px var(--cor-seguro-brilho);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+  .titulo-cabecalho {
+      font-size: 1.5rem;
+  }
+}
