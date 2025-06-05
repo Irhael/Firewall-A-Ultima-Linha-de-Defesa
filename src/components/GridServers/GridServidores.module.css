@@ -1,0 +1,37 @@
+/* src/components/GridServidores/GridServidores.module.css */
+.containerGridServidores { 
+    display: grid;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    grid-template-rows: repeat(3, minmax(100px, 1fr));
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 1 / 1;
+    border: 2px solid var(--cor-borda); 
+    padding: 15px;
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.controles { 
+    margin-top: 30px;
+    text-align: center;
+}
+
+.controles button { 
+    background-color: var(--cor-fundo-no);
+    color: var(--cor-texto);
+    border: 1px solid var(--cor-borda);
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    font-family: var(--fonte-familia); 
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.controles button:hover {
+    border-color: var(--cor-seguro); 
+    color: var(--cor-seguro);
+    box-shadow: 0 0 8px var(--cor-seguro-brilho); 
+}
