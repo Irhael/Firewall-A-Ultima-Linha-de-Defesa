@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from 'react';
 import GridServidores from './components/GridServidores/GridServidores'; 
-// import './App.css'; 
+
 
 function App() {
   return (
