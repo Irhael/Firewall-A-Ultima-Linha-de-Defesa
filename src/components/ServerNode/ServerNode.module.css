@@ -48,4 +48,10 @@
     letter-spacing: 1px;
 }
 
+/* Estilos específicos para cada status */
+.secure {
+    border-color: var(--color-secure);
+    box-shadow: 0 0 10px var(--color-secure-glow);
+}
+.secure .nodeStatusIcon, .secure .nodeLabel { color: var(--color-secure); }
 
