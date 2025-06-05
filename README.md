@@ -1,6 +1,6 @@
-# 🔥 Firewall: A Última Linha de Defesa 🛡️
+#  Firewall: A Última Linha de Defesa 🛡️
 
-## 🎮 Visão Geral do Jogo
+##  Visão Geral do Jogo
 
 **Firewall: A Última Linha de Defesa** é um jogo cooperativo 2D baseado em turnos, inspirado na dinâmica do popular jogo *Pandemic*, mas com uma imersiva temática de segurança da informação. Neste desafio, de 2 a 4 jogadores assumem o papel de analistas de cibersegurança de elite, encarregados de proteger a infraestrutura digital crítica de uma grande corporação contra uma onda implacável de ciberataques.
 
@@ -10,7 +10,7 @@ O jogo termina com a **vitória** da equipa se todos os ataques forem contidos c
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+##  Tecnologias Utilizadas
 
 * **Frontend:** React com Vite
 * **Linguagem Principal:** JavaScript 
@@ -21,24 +21,24 @@ O jogo termina com a **vitória** da equipa se todos os ataques forem contidos c
 
 ---
 
-## ✨ Funcionalidades Principais
+##  Funcionalidades Principais
 
-* **🌐 Grid de Servidores Interativo (3x3):** O campo de batalha digital onde a ação acontece. (RF02)
-* **🎲 Geração Aleatória de Ataques:** Diferentes tipos de ciberataques (vírus, ransomware, DDoS, phishing) surgem a cada rodada, mantendo a jogabilidade dinâmica e desafiadora. (RF03)
-* **🛠️ Ações Estratégicas dos Jogadores:**
+* ** Grid de Servidores Interativo (3x3):** O campo de batalha digital onde a ação acontece. (RF02)
+* ** Geração Aleatória de Ataques:** Diferentes tipos de ciberataques (vírus, ransomware, DDoS, phishing) surgem a cada rodada, mantendo a jogabilidade dinâmica e desafiadora. (RF03)
+* **🛠 Ações Estratégicas dos Jogadores:**
     * Isolar Servidor
     * Instalar Firewall
     * Analisar Ameaça
     * (Outras ações que vocês implementarem) (RF04)
-* **🚨 Controlo de Servidores Comprometidos:** Um indicador visual e lógico do quão perto a rede está do colapso. (RF05)
-* **🏆 Condições de Vitória e Derrota:** Objetivos claros para o sucesso ou fracasso da equipa. (RF06)
-* **👤 Multiplayer Cooperativo (Planeado):** Suporte para 2 a 4 jogadores trabalhando juntos. (RF01 - Indicar se já está implementado ou em desenvolvimento)
-* **🖥️ Acessível via Navegador:** Jogue em qualquer lugar, a qualquer hora. (RNF01)
-* **📄 Código Aberto:** Licenciado sob MIT, incentivando a colaboração e o aprendizado. (RNF03)
+* ** Controlo de Servidores Comprometidos:** Um indicador visual e lógico do quão perto a rede está do colapso. (RF05)
+* ** Condições de Vitória e Derrota:** Objetivos claros para o sucesso ou fracasso da equipa. (RF06)
+* ** Multiplayer Cooperativo (Planeado):** Suporte para 2 a 4 jogadores trabalhando juntos. (RF01 - Indicar se já está implementado ou em desenvolvimento)
+* **🖥 Acessível via Navegador:** Jogue em qualquer lugar, a qualquer hora. (RNF01)
+* ** Código Aberto:** Licenciado sob MIT, incentivando a colaboração e o aprendizado. (RNF03)
 
 ---
 
-## 🕹️ Como Jogar (Guia Rápido)
+##  Como Jogar (Guia Rápido)
 
 1.  **Reúna a sua Equipa:** Forme uma equipa de 2 a 4 analistas de cibersegurança.
 2.  **Navegue pela Rede:** Movimente o seu avatar pelo grid de servidores.
@@ -53,7 +53,7 @@ O jogo termina com a **vitória** da equipa se todos os ataques forem contidos c
 
 ---
 
-## ⚙️ Como Configurar e Rodar o Projeto Localmente
+##  Como Configurar e Rodar o Projeto Localmente
 
 Para executar o "Firewall: A Última Linha de Defesa" no seu ambiente de desenvolvimento local, siga estes passos:
 
