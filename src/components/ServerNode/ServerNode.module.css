@@ -73,3 +73,9 @@
 }
 .compromised .nodeStatusIcon, .compromised .nodeLabel { color: var(--color-compromised); }
 
+.isolated {
+    border-color: var(--color-isolated);
+    border-style: dashed;
+    box-shadow: 0 0 10px var(--color-isolated-glow);
+}
+.isolated .nodeStatusIcon, .isolated .nodeLabel { color: var(--color-isolated); }
