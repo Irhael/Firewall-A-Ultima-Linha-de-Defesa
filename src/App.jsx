@@ -1,14 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import React from 'react';
+import GridServidores from './components/GridServidores/GridServidores'; 
+
 
 function App() {
   return (
-    <div>
-      <h1>Firewall: A Última Linha de Defesa</h1>
+    <div className="app-container"> 
+      <header>
+        <h1 className="titulo-cabecalho">&lt;Firewall: A Última Linha de Defesa_&gt;</h1> 
+      </header>
+      <main>
+        <GridServidores />
+      </main>
+      <footer>
+        {/* Rodapé opcional */}
+      </footer>
     </div>
   );
 }
 
-export default App
+export default App;

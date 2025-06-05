@@ -1,0 +1,95 @@
+/* src/components/NodeServidor/NodeServidor.module.css */
+.nodeServidor { 
+    background-color: var(--cor-fundo-no); 
+    border: 2px solid var(--cor-borda);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.nodeServidor::before { /* Efeito Scanline */
+    content: "";
+    position: absolute;
+    left: 0; top: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.05) 50%);
+    background-size: 100% 4px;
+    opacity: 0.5;
+}
+
+.nodeServidor:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.idDoNode { 
+    font-size: 0.8rem;
+    color: var(--cor-texto);
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.iconeStatusNode { 
+    font-size: 1.5rem;
+    margin-top: 5px;
+}
+
+.labelStatusNode { 
+    font-size: 0.7rem;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Estilos específicos para cada status */
+.seguro { 
+    border-color: var(--cor-seguro);
+    box-shadow: 0 0 10px var(--cor-seguro-brilho);
+}
+.seguro .iconeStatusNode, .seguro .labelStatusNode { color: var(--cor-seguro); }
+
+.sobAtaque { 
+    border-color: var(--cor-ataque);
+    box-shadow: 0 0 10px var(--cor-ataque-brilho);
+    animation: pulsoAtaque 1.5s infinite ease-in-out; 
+}
+.sobAtaque .iconeStatusNode, .sobAtaque .labelStatusNode { color: var(--cor-ataque); }
+
+.comprometido { 
+    border-color: var(--cor-comprometido);
+    box-shadow: 0 0 15px var(--cor-comprometido-brilho);
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--cor-fundo-no), var(--cor-fundo-no) 5px,
+        rgba(255, 56, 100, 0.1) 5px, rgba(255, 56, 100, 0.1) 10px
+    );
+}
+.comprometido .iconeStatusNode, .comprometido .labelStatusNode { color: var(--cor-comprometido); }
+
+.isolado { 
+    border-color: var(--cor-isolado);
+    border-style: dashed;
+    box-shadow: 0 0 10px var(--cor-isolado-brilho);
+}
+.isolado .iconeStatusNode, .isolado .labelStatusNode { color: var(--cor-isolado); }
+
+.selecionado { 
+    border-color: var(--cor-selecionado);
+    box-shadow: 0 0 15px var(--cor-selecionado-brilho);
+    transform: scale(1.05);
+}
+.selecionado .idDoNode { color: var(--cor-selecionado); }
+
+@keyframes pulsoAtaque {
+    0% { box-shadow: 0 0 8px var(--cor-ataque-brilho); opacity: 1; }
+    50% { box-shadow: 0 0 15px var(--cor-ataque-brilho); opacity: 0.7; }
+    100% { box-shadow: 0 0 8px var(--cor-ataque-brilho); opacity: 1; }
+}
