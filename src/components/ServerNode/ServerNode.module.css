@@ -55,3 +55,9 @@
 }
 .secure .nodeStatusIcon, .secure .nodeLabel { color: var(--color-secure); }
 
+.underAttack {
+    border-color: var(--color-attack);
+    box-shadow: 0 0 10px var(--color-attack-glow);
+    animation: pulseAttack 1.5s infinite ease-in-out; /* Defina @keyframes pulseAttack */
+}
+.underAttack .nodeStatusIcon, .underAttack .nodeLabel { color: var(--color-attack); }
