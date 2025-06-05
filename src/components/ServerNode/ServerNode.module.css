@@ -58,7 +58,7 @@
 .underAttack {
     border-color: var(--color-attack);
     box-shadow: 0 0 10px var(--color-attack-glow);
-    animation: pulseAttack 1.5s infinite ease-in-out; /* Defina @keyframes pulseAttack */
+    animation: pulseAttack 1.5s infinite ease-in-out; /* @keyframes pulseAttack */
 }
 .underAttack .nodeStatusIcon, .underAttack .nodeLabel { color: var(--color-attack); }
 
@@ -79,3 +79,10 @@
     box-shadow: 0 0 10px var(--color-isolated-glow);
 }
 .isolated .nodeStatusIcon, .isolated .nodeLabel { color: var(--color-isolated); }
+
+selected {
+    border-color: var(--color-selected);
+    box-shadow: 0 0 15px var(--color-selected-glow);
+    transform: scale(1.05);
+}
+.selected .nodeId { color: var(--color-selected); }
