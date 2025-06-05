@@ -5,7 +5,7 @@ import styles from './NodeServidor.module.css'; // Usando CSS Modules
 
 const detalhesStatus = {
     seguro: { icon: '🛡️', label: 'SEGURO', className: styles.seguro },
-    sobAtaque: { icon: '⚠️', label: 'EM RISCO', className: styles.sobAtaque },
+    sobAtaque: { icon: '⚠️', label: 'SOB ATAQUE', className: styles.sobAtaque },
     comprometido: { icon: '☠️', label: 'COMPROMETIDO', className: styles.comprometido },
     isolado: { icon: '🔗', label: 'ISOLADO', className: styles.isolado },
     desconhecido: { icon: '❓', label: 'DESCONHECIDO', className: styles.desconhecido }
