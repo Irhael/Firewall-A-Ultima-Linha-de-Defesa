@@ -1,6 +1,7 @@
-.serverNode {
-    background-color: var(--node-bg-color); /* Defina suas variáveis no CSS global ou aqui */
-    border: 2px solid var(--border-color);
+/* src/components/NodeServidor/NodeServidor.module.css */
+.nodeServidor { 
+    background-color: var(--cor-fundo-no); 
+    border: 2px solid var(--cor-borda);
     border-radius: 6px;
     display: flex;
     flex-direction: column;
@@ -14,7 +15,7 @@
     overflow: hidden;
 }
 
-.serverNode::before { /* Efeito Scanline */
+.nodeServidor::before { /* Efeito Scanline */
     content: "";
     position: absolute;
     left: 0; top: 0; width: 100%; height: 100%;
@@ -24,24 +25,24 @@
     opacity: 0.5;
 }
 
-.serverNode:hover {
+.nodeServidor:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.nodeId {
+.idDoNode { 
     font-size: 0.8rem;
-    color: var(--text-color);
+    color: var(--cor-texto);
     margin-bottom: 5px;
     font-weight: 700;
 }
 
-.nodeStatusIcon {
+.iconeStatusNode { 
     font-size: 1.5rem;
     margin-top: 5px;
 }
 
-.nodeLabel {
+.labelStatusNode { 
     font-size: 0.7rem;
     margin-top: 5px;
     text-transform: uppercase;
@@ -49,40 +50,46 @@
 }
 
 /* Estilos específicos para cada status */
-.secure {
-    border-color: var(--color-secure);
-    box-shadow: 0 0 10px var(--color-secure-glow);
+.seguro { 
+    border-color: var(--cor-seguro);
+    box-shadow: 0 0 10px var(--cor-seguro-brilho);
 }
-.secure .nodeStatusIcon, .secure .nodeLabel { color: var(--color-secure); }
+.seguro .iconeStatusNode, .seguro .labelStatusNode { color: var(--cor-seguro); }
 
-.underAttack {
-    border-color: var(--color-attack);
-    box-shadow: 0 0 10px var(--color-attack-glow);
-    animation: pulseAttack 1.5s infinite ease-in-out; /* @keyframes pulseAttack */
+.sobAtaque { 
+    border-color: var(--cor-ataque);
+    box-shadow: 0 0 10px var(--cor-ataque-brilho);
+    animation: pulsoAtaque 1.5s infinite ease-in-out; 
 }
-.underAttack .nodeStatusIcon, .underAttack .nodeLabel { color: var(--color-attack); }
+.sobAtaque .iconeStatusNode, .sobAtaque .labelStatusNode { color: var(--cor-ataque); }
 
-.compromised {
-    border-color: var(--color-compromised);
-    box-shadow: 0 0 15px var(--color-compromised-glow);
+.comprometido { 
+    border-color: var(--cor-comprometido);
+    box-shadow: 0 0 15px var(--cor-comprometido-brilho);
     background-image: repeating-linear-gradient(
         45deg,
-        var(--node-bg-color), var(--node-bg-color) 5px,
+        var(--cor-fundo-no), var(--cor-fundo-no) 5px,
         rgba(255, 56, 100, 0.1) 5px, rgba(255, 56, 100, 0.1) 10px
     );
 }
-.compromised .nodeStatusIcon, .compromised .nodeLabel { color: var(--color-compromised); }
+.comprometido .iconeStatusNode, .comprometido .labelStatusNode { color: var(--cor-comprometido); }
 
-.isolated {
-    border-color: var(--color-isolated);
+.isolado { 
+    border-color: var(--cor-isolado);
     border-style: dashed;
-    box-shadow: 0 0 10px var(--color-isolated-glow);
+    box-shadow: 0 0 10px var(--cor-isolado-brilho);
 }
-.isolated .nodeStatusIcon, .isolated .nodeLabel { color: var(--color-isolated); }
+.isolado .iconeStatusNode, .isolado .labelStatusNode { color: var(--cor-isolado); }
 
-selected {
-    border-color: var(--color-selected);
-    box-shadow: 0 0 15px var(--color-selected-glow);
+.selecionado { 
+    border-color: var(--cor-selecionado);
+    box-shadow: 0 0 15px var(--cor-selecionado-brilho);
     transform: scale(1.05);
 }
-.selected .nodeId { color: var(--color-selected); }
+.selecionado .idDoNode { color: var(--cor-selecionado); }
+
+@keyframes pulsoAtaque {
+    0% { box-shadow: 0 0 8px var(--cor-ataque-brilho); opacity: 1; }
+    50% { box-shadow: 0 0 15px var(--cor-ataque-brilho); opacity: 0.7; }
+    100% { box-shadow: 0 0 8px var(--cor-ataque-brilho); opacity: 1; }
+}
