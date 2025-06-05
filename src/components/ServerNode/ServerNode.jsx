@@ -27,3 +27,4 @@ function ServerNode({ id, name, status,isSelected, onNodeClick }) {
 }
 
 export default ServerNode;
+
