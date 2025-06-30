@@ -13,7 +13,6 @@ function App() {
         <GridServidores />
       </main>
       <footer>
-        {/* Rodapé opcional */}
       </footer>
     </div>
   );
