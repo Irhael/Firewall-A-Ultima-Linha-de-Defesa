@@ -1,0 +1,67 @@
+modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalConteudo {
+    background-color: var(--cor-fundo, #101214);
+    border: 1px solid var(--cor-borda, #33373d);
+    border-radius: 8px;
+    padding: 25px 30px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+}
+
+.modalMensagem {
+    font-size: 1.1rem;
+    color: var(--cor-texto, #c8c8c8);
+    margin: 0 0 25px 0;
+}
+
+.modalAcoes {
+    display: flex;
+    justify-content: space-around;
+}
+
+.botaoModal {
+    font-family: var(--fonte-familia, 'Roboto Mono', monospace);
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.botaoCancelar {
+    background-color: transparent;
+    border-color: var(--cor-texto, #c8c8c8);
+    color: var(--cor-texto, #c8c8c8);
+}
+
+.botaoCancelar:hover {
+    background-color: var(--cor-texto, #c8c8c8);
+    color: var(--cor-fundo, #101214);
+}
+
+.botaoConfirmar {
+    background-color: var(--cor-comprometido, #ff3864);
+    border-color: var(--cor-comprometido, #ff3864);
+    color: #fff;
+}
+
+.botaoConfirmar:hover {
+    background-color: transparent;
+    color: var(--cor-comprometido, #ff3864);
+}
