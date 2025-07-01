@@ -1,7 +1,9 @@
+
+
 import React, { useState, useEffect, useCallback } from 'react';
 import NodeServidor from '../NodeServidor/NodeServidor';
 import ModalConfirmacao from '../ModalConfirmacao/ModalConfirmacao';
-import TelaFimDeJogo from '../TelaFimDeJogo/TelaFimDeJogo'; // Importa a nova tela de fim de jogo
+import TelaFimDeJogo from '../TelaFimDeJogo/TelaFimDeJogo';
 import styles from './GridServidores.module.css';
 import {
     TOTAL_NOS,
@@ -9,41 +11,36 @@ import {
     processarProximaRodada,
     calcularServidoresComprometidos,
     aplicarAcaoJogador
-} from '../LogicaJogo/motorJogo'; // Importa a lógica do jogo
+} from '../LogicaJogo/motorJogo';
 
 function GridServidores() {
-    // Estados do componente
     const [nodes, setNodes] = useState([]);
     const [idNodeSelecionado, setIdNodeSelecionado] = useState(null);
     const [rodadaAtual, setRodadaAtual] = useState(0);
     const [gameMessage, setGameMessage] = useState("Bem-vindo ao Firewall! Clique em 'Próxima Rodada'.");
     const [isModalAberto, setIsModalAberto] = useState(false);
-    const [statusJogo, setStatusJogo] = useState('em_andamento'); // Novo estado: 'em_andamento', 'vitoria', 'derrota'
+    const [statusJogo, setStatusJogo] = useState('em_andamento');
 
-    // Função para carregar/reiniciar o estado inicial do jogo
     const carregarEstadoInicial = useCallback(() => {
         setNodes(inicializarEstadoJogo());
         setRodadaAtual(0);
         setIdNodeSelecionado(null);
         setGameMessage("Jogo reiniciado. Avance para a próxima rodada.");
         setIsModalAberto(false);
-        setStatusJogo('em_andamento'); // Reseta o status do jogo
+        setStatusJogo('em_andamento');
     }, []);
 
-    // Carrega o estado inicial quando o componente é montado
     useEffect(() => {
         carregarEstadoInicial();
     }, [carregarEstadoInicial]);
 
-    // Lida com o clique num nó do servidor
     const handleNodeClick = (id) => {
-        if (statusJogo !== 'em_andamento') return; // Impede seleção se o jogo acabou
+        if (statusJogo !== 'em_andamento') return;
         setIdNodeSelecionado(id);
         const nodeClicado = nodes.find(n => n.id === id);
         setGameMessage(`Servidor ${nodeClicado?.nome || id} selecionado. Escolha uma ação.`);
     };
 
-    // Executa uma ação do jogador no nó selecionado
     const executarAcaoJogador = (novoStatusParaSelecionado) => {
         if (idNodeSelecionado === null || statusJogo !== 'em_andamento') return;
         
@@ -51,17 +48,15 @@ function GridServidores() {
         setNodes(nodesAtualizados);
         setGameMessage(mensagemAcao);
 
-        // Verifica se a ação de limpar o último servidor resultou em vitória
         const todosSeguros = nodesAtualizados.every(node => node.status === 'seguro');
-        if (todosSeguros) {
+        if (todosSeguros && rodadaAtual > 0) {
             setStatusJogo('vitoria');
             setGameMessage("AMEAÇAS NEUTRALIZADAS! Todos os sistemas estão seguros.");
         }
     };
 
-    // Avança para a próxima rodada
     const handleProximaRodada = () => {
-        if (statusJogo !== 'em_andamento') return; // Impede avançar a rodada se o jogo acabou
+        if (statusJogo !== 'em_andamento') return;
 
         const novaRodada = rodadaAtual + 1;
         setRodadaAtual(novaRodada);
@@ -70,7 +65,6 @@ function GridServidores() {
         setNodes(resultadoDaRodada.nodesAtualizados);
         setGameMessage(resultadoDaRodada.mensagensDaRodada.join(' | '));
         
-        // Atualiza o status do jogo se ele mudou
         if (resultadoDaRodada.statusJogo !== 'em_andamento') {
             setStatusJogo(resultadoDaRodada.statusJogo);
         }
@@ -78,7 +72,6 @@ function GridServidores() {
         setIdNodeSelecionado(null);
     };
     
-    // Abre o modal de confirmação para reiniciar
     const handleReiniciarClick = () => {
         setIsModalAberto(true);
     };
@@ -87,7 +80,6 @@ function GridServidores() {
 
     return (
         <>
-            {/* O Modal de Confirmação para reiniciar */}
             <ModalConfirmacao
                 estaAberto={isModalAberto}
                 mensagem="Tem a certeza de que deseja reiniciar o jogo? Todo o progresso será perdido."
@@ -95,7 +87,6 @@ function GridServidores() {
                 aoCancelar={() => setIsModalAberto(false)}
             />
 
-            {/* A Tela de Fim de Jogo (só aparece quando o jogo termina) */}
             <TelaFimDeJogo 
                 status={statusJogo} 
                 rodadaFinal={rodadaAtual} 
@@ -130,7 +121,7 @@ function GridServidores() {
                 <button 
                     onClick={handleProximaRodada} 
                     className={styles.botaoRodada}
-                    disabled={statusJogo !== 'em_andamento'} // Desabilita o botão se o jogo acabou
+                    disabled={statusJogo !== 'em_andamento'}
                 >
                     Próxima Rodada
                 </button>
