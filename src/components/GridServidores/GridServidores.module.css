@@ -1,3 +1,5 @@
+/* Ficheiro: src/components/GridServidores/GridServidores.module.css */
+
 .containerGridServidores {
     display: grid;
     grid-template-columns: repeat(3, minmax(100px, 1fr));
@@ -13,14 +15,27 @@
 }
 
 .infoJogo {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 600px;
     text-align: center;
     margin-bottom: 20px;
     font-size: 1.1em;
     color: var(--cor-texto);
+    background-color: var(--cor-fundo-no);
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--cor-borda);
 }
 
 .infoJogo p {
-    margin: 5px 0;
+    margin: 0 10px;
+}
+
+.infoValor {
+    color: var(--cor-destaque);
+    font-weight: bold;
 }
 
 .alertaComprometidos {
@@ -114,14 +129,13 @@
     transition: all 0.2s ease;
 }
 
-.controlesNode button:hover {
+.controlesNode button:hover:not(:disabled) {
     border-color: var(--cor-seguro);
     color: var(--cor-seguro);
     box-shadow: 0 0 8px var(--cor-seguro-brilho);
 }
 
-
-
-
-
-
+.controlesNode button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
