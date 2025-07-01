@@ -1,83 +1,93 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import NodeServidor from '../NodeServidor/NodeServidor';
-import ModalConfirmacao from '../ModalConfirmacao/ModalConfirmacao'; // Importa o novo modal
+import ModalConfirmacao from '../ModalConfirmacao/ModalConfirmacao';
+import TelaFimDeJogo from '../TelaFimDeJogo/TelaFimDeJogo'; // Importa a nova tela de fim de jogo
 import styles from './GridServidores.module.css';
-import { // Importa as funções e constantes da lógica do jogo
+import {
     TOTAL_NOS,
     inicializarEstadoJogo,
     processarProximaRodada,
     calcularServidoresComprometidos,
     aplicarAcaoJogador
-} from '../LogicaJogo/motorJogo'; // Assumindo que este ficheiro existe
+} from '../LogicaJogo/motorJogo'; // Importa a lógica do jogo
 
 function GridServidores() {
-    // Estados do componente: para os nós, seleção, rodada, mensagens e o modal
+    // Estados do componente
     const [nodes, setNodes] = useState([]);
     const [idNodeSelecionado, setIdNodeSelecionado] = useState(null);
     const [rodadaAtual, setRodadaAtual] = useState(0);
     const [gameMessage, setGameMessage] = useState("Bem-vindo ao Firewall! Clique em 'Próxima Rodada'.");
     const [isModalAberto, setIsModalAberto] = useState(false);
+    const [statusJogo, setStatusJogo] = useState('em_andamento'); // Novo estado: 'em_andamento', 'vitoria', 'derrota'
 
-    // Função para carregar o estado inicial do jogo, agora usando a lógica externa
+    // Função para carregar/reiniciar o estado inicial do jogo
     const carregarEstadoInicial = useCallback(() => {
         setNodes(inicializarEstadoJogo());
         setRodadaAtual(0);
         setIdNodeSelecionado(null);
-        setGameMessage("O estado do jogo foi reiniciado. Avance para a próxima rodada.");
-        setIsModalAberto(false); // Garante que o modal feche após a confirmação
+        setGameMessage("Jogo reiniciado. Avance para a próxima rodada.");
+        setIsModalAberto(false);
+        setStatusJogo('em_andamento'); // Reseta o status do jogo
     }, []);
 
-    // useEffect para carregar o estado inicial quando o componente é montado
+    // Carrega o estado inicial quando o componente é montado
     useEffect(() => {
         carregarEstadoInicial();
     }, [carregarEstadoInicial]);
 
-    // Função para lidar com o clique em um nó do servidor
+    // Lida com o clique num nó do servidor
     const handleNodeClick = (id) => {
+        if (statusJogo !== 'em_andamento') return; // Impede seleção se o jogo acabou
         setIdNodeSelecionado(id);
         const nodeClicado = nodes.find(n => n.id === id);
         setGameMessage(`Servidor ${nodeClicado?.nome || id} selecionado. Escolha uma ação.`);
     };
 
-    // Função para executar uma ação do jogador no nó selecionado
+    // Executa uma ação do jogador no nó selecionado
     const executarAcaoJogador = (novoStatusParaSelecionado) => {
-        if (idNodeSelecionado === null) {
-            setGameMessage('AÇÃO: Por favor, selecione um servidor primeiro.');
-            return;
-        }
-        // Chama a lógica externa para aplicar a ação
+        if (idNodeSelecionado === null || statusJogo !== 'em_andamento') return;
+        
         const { nodesAtualizados, mensagemAcao } = aplicarAcaoJogador(nodes, idNodeSelecionado, novoStatusParaSelecionado);
         setNodes(nodesAtualizados);
         setGameMessage(mensagemAcao);
+
+        // Verifica se a ação de limpar o último servidor resultou em vitória
+        const todosSeguros = nodesAtualizados.every(node => node.status === 'seguro');
+        if (todosSeguros) {
+            setStatusJogo('vitoria');
+            setGameMessage("AMEAÇAS NEUTRALIZADAS! Todos os sistemas estão seguros.");
+        }
     };
 
-    // Função para avançar para a próxima rodada
+    // Avança para a próxima rodada
     const handleProximaRodada = () => {
+        if (statusJogo !== 'em_andamento') return; // Impede avançar a rodada se o jogo acabou
+
         const novaRodada = rodadaAtual + 1;
         setRodadaAtual(novaRodada);
         
-        // Chama a lógica externa para processar a rodada
-        const { nodesAtualizados, mensagensDaRodada } = processarProximaRodada(nodes, novaRodada);
-        setNodes(nodesAtualizados);
-
-        if (mensagensDaRodada.length === 1 && mensagensDaRodada[0].startsWith("--- Rodada")) {
-             mensagensDaRodada.push("Nenhuma atividade significativa de ataque ou comprometimento nesta rodada.");
+        const resultadoDaRodada = processarProximaRodada(nodes, novaRodada);
+        setNodes(resultadoDaRodada.nodesAtualizados);
+        setGameMessage(resultadoDaRodada.mensagensDaRodada.join(' | '));
+        
+        // Atualiza o status do jogo se ele mudou
+        if (resultadoDaRodada.statusJogo !== 'em_andamento') {
+            setStatusJogo(resultadoDaRodada.statusJogo);
         }
-        setGameMessage(mensagensDaRodada.join(' | '));
+
         setIdNodeSelecionado(null);
     };
     
-    // Função para abrir o modal de confirmação antes de reiniciar
+    // Abre o modal de confirmação para reiniciar
     const handleReiniciarClick = () => {
         setIsModalAberto(true);
     };
 
-    // Calcula o número de servidores comprometidos usando a lógica externa
     const servidoresComprometidos = calcularServidoresComprometidos(nodes);
 
     return (
         <>
-            {/* O Modal de Confirmação é renderizado aqui, mas só aparece se isModalAberto for true */}
+            {/* O Modal de Confirmação para reiniciar */}
             <ModalConfirmacao
                 estaAberto={isModalAberto}
                 mensagem="Tem a certeza de que deseja reiniciar o jogo? Todo o progresso será perdido."
@@ -85,7 +95,13 @@ function GridServidores() {
                 aoCancelar={() => setIsModalAberto(false)}
             />
 
-            {/* Painel de informações do jogo */}
+            {/* A Tela de Fim de Jogo (só aparece quando o jogo termina) */}
+            <TelaFimDeJogo 
+                status={statusJogo} 
+                rodadaFinal={rodadaAtual} 
+                aoReiniciar={carregarEstadoInicial} 
+            />
+
             <div className={styles.infoJogo}>
                 <p>Rodada Atual: {rodadaAtual}</p>
                 <p className={servidoresComprometidos > 0 ? styles.alertaComprometidos : ''}>
@@ -93,12 +109,10 @@ function GridServidores() {
                 </p>
             </div>
 
-            {/* Área de mensagens de eventos do jogo */}
             <div className={styles.gameMessageArea}>
                 <p>{gameMessage}</p>
             </div>
 
-            {/* O grid de servidores */}
             <div className={styles.containerGridServidores}>
                 {nodes.map(node => (
                     <NodeServidor
@@ -112,18 +126,20 @@ function GridServidores() {
                 ))}
             </div>
 
-            {/* Controles principais do jogo */}
             <div className={styles.controlesJogo}>
-                <button onClick={handleProximaRodada} className={styles.botaoRodada}>
-                    Próxima Rodada / Gerar Ataques
+                <button 
+                    onClick={handleProximaRodada} 
+                    className={styles.botaoRodada}
+                    disabled={statusJogo !== 'em_andamento'} // Desabilita o botão se o jogo acabou
+                >
+                    Próxima Rodada
                 </button>
                 <button onClick={handleReiniciarClick} className={styles.botaoReset}>
                     Reiniciar Jogo
                 </button>
             </div>
 
-            {/* Controles de ações do jogador (só aparecem quando um nó está selecionado) */}
-            {idNodeSelecionado !== null && (
+            {idNodeSelecionado !== null && statusJogo === 'em_andamento' && (
                 <div className={styles.controlesNode}>
                     <p>Ações para {nodes.find(n => n.id === idNodeSelecionado)?.nome || ''}:</p>
                     <button onClick={() => executarAcaoJogador('seguro')}>Marcar como Seguro</button>

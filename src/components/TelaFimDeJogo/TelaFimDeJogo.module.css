@@ -1,0 +1,79 @@
+.overlayFimDeJogo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(16, 18, 20, 0.85); /* Usa a cor de fundo com transparência */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.caixaDialogo {
+    background-color: var(--cor-fundo-no, #1a1d21);
+    border-radius: 8px;
+    padding: 30px 40px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    border-top: 4px solid;
+}
+
+.vitoria {
+    border-color: var(--cor-seguro, #00ff9b);
+}
+
+.derrota {
+    border-color: var(--cor-comprometido, #ff3864);
+}
+
+.titulo {
+    font-size: 1.8rem;
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+
+.vitoria .titulo {
+    color: var(--cor-seguro, #00ff9b);
+    text-shadow: 0 0 8px var(--cor-seguro-brilho, rgba(0, 255, 155, 0.5));
+}
+
+.derrota .titulo {
+    color: var(--cor-comprometido, #ff3864);
+    text-shadow: 0 0 8px var(--cor-comprometido-brilho, rgba(255, 56, 100, 0.5));
+}
+
+.mensagem {
+    font-size: 1.1rem;
+    color: var(--cor-texto, #c8c8c8);
+    margin: 0 0 30px 0;
+    line-height: 1.5;
+}
+
+.botaoReiniciar {
+    font-family: var(--fonte-familia, 'Roboto Mono', monospace);
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--cor-fundo, #101214);
+    background-color: var(--cor-texto, #c8c8c8);
+    border: none;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.botaoReiniciar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(200, 200, 200, 0.5);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

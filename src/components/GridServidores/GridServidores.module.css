@@ -1,5 +1,4 @@
-/* src/components/GridServidores/GridServidores.module.css */
-.containerGridServidores { 
+.containerGridServidores {
     display: grid;
     grid-template-columns: repeat(3, minmax(100px, 1fr));
     grid-template-rows: repeat(3, minmax(100px, 1fr));
@@ -13,25 +12,110 @@
     border-radius: 8px;
 }
 
-.controles { 
-    margin-top: 30px;
+.infoJogo {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: var(--cor-texto);
+}
+
+.infoJogo p {
+    margin: 5px 0;
+}
+
+.alertaComprometidos {
+    color: var(--cor-comprometido);
+    font-weight: bold;
+}
+
+.gameMessageArea {
+    width: 100%;
+    max-width: 600px;
+    margin: 10px auto 20px auto;
+    padding: 10px;
+    background-color: var(--cor-fundo-no);
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    text-align: center;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gameMessageArea p {
+    margin: 0;
+    color: var(--cor-texto);
+    font-size: 0.9em;
+}
+
+.controlesJogo {
+    margin-top: 20px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
-.controles button { 
+.botaoRodada, .botaoReset {
     background-color: var(--cor-fundo-no);
     color: var(--cor-texto);
     border: 1px solid var(--cor-borda);
-    padding: 10px 20px;
+    padding: 12px 25px;
+    margin: 5px 10px;
+    cursor: pointer;
+    font-family: var(--fonte-familia);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 1em;
+}
+
+.botaoRodada:hover:not(:disabled) {
+    border-color: var(--cor-ataque);
+    color: var(--cor-ataque);
+    box-shadow: 0 0 8px var(--cor-ataque-brilho);
+}
+
+.botaoReset:hover {
+    border-color: var(--cor-isolado);
+    color: var(--cor-isolado);
+    box-shadow: 0 0 8px var(--cor-isolado-brilho);
+}
+
+.botaoRodada:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    border-color: var(--cor-borda);
+    color: var(--cor-borda);
+}
+
+.controlesNode {
+    margin-top: 20px;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.controlesNode p {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--cor-selecionado);
+}
+
+.controlesNode button {
+    background-color: var(--cor-fundo-no);
+    color: var(--cor-texto);
+    border: 1px solid var(--cor-borda);
+    padding: 8px 15px;
     margin: 5px;
     cursor: pointer;
-    font-family: var(--fonte-familia); 
+    font-family: var(--fonte-familia);
     border-radius: 4px;
     transition: all 0.2s ease;
 }
 
-.controles button:hover {
-    border-color: var(--cor-seguro); 
+.controlesNode button:hover {
+    border-color: var(--cor-seguro);
     color: var(--cor-seguro);
-    box-shadow: 0 0 8px var(--cor-seguro-brilho); 
+    box-shadow: 0 0 8px var(--cor-seguro-brilho);
 }
