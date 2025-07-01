@@ -1,0 +1,134 @@
+:root {
+    --cor-fundo: #101214;
+    --cor-texto: #c8c8c8;
+    --fonte-familia: 'Roboto Mono', monospace;
+    --cor-destaque: #00ff9b;
+    --cor-destaque-brilho: rgba(0, 255, 155, 0.5);
+    --cor-botao-borda: #33373d;
+}
+
+.containerInicial {
+    text-align: center;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.asciiArt {
+    font-family: monospace;
+    white-space: pre;
+    color: var(--cor-destaque);
+    font-size: 0.8rem;
+    line-height: 1;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 8px var(--cor-destaque-brilho);
+    animation: flicker 3s infinite alternate;
+}
+
+.tituloJogo {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--cor-destaque);
+    text-shadow: 0 0 10px var(--cor-destaque-brilho);
+    margin: 0 0 1rem 0;
+    letter-spacing: 2px;
+}
+
+.subtituloJogo {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    color: var(--cor-texto);
+}
+
+.terminalLogin {
+    width: 100%;
+    max-width: 450px;
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+    border: 1px solid var(--cor-botao-borda);
+    background-color: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.linhaTerminal {
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: .15em solid var(--cor-destaque); /* Efeito de cursor a piscar */
+}
+
+/* Animação da primeira linha */
+.l1 {
+    animation: typing 2s steps(40, end) forwards, blink-caret .75s step-end 3;
+}
+
+/* Oculta as linhas para animá-las em sequência via JS */
+.l2, .l3 { 
+    visibility: hidden; 
+    width: 0;
+}
+
+.botaoIniciar {
+    font-family: var(--fonte-familia);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--cor-destaque);
+    background-color: transparent;
+    border: 2px solid var(--cor-destaque);
+    padding: 15px 30px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px var(--cor-destaque-brilho);
+    opacity: 0; /* Começa invisível, o JS controla a aparição */
+    transition: opacity 1s ease;
+}
+
+.botaoIniciar:hover {
+    background-color: var(--cor-destaque);
+    color: var(--cor-fundo);
+    box-shadow: 0 0 25px var(--cor-destaque-brilho);
+}
+
+/* Animações */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--cor-destaque); }
+}
+
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow:
+        0 0 4px var(--cor-destaque-brilho),
+        0 0 11px var(--cor-destaque-brilho),
+        0 0 19px var(--cor-destaque-brilho),
+        0 0 40px var(--cor-destaque),
+        0 0 80px var(--cor-destaque),
+        0 0 90px var(--cor-destaque);
+    }
+    20%, 24%, 55% {       
+        text-shadow: none;
+    }
+}
+
+/* Media Queries para Responsividade */
+@media (max-width: 600px) {
+    .tituloJogo {
+        font-size: 1.8rem;
+    }
+    .subtituloJogo {
+        font-size: 0.9rem;
+    }
+    .asciiArt {
+        font-size: 0.6rem;
+    }
+}
