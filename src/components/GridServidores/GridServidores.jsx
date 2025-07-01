@@ -11,7 +11,7 @@ import {
     aplicarAcaoJogador
 } from '../LogicaJogo/motorJogo';
 
-const ACOES_POR_TURNO = 4; // Define o número de ações que o jogador tem por turno
+const ACOES_POR_TURNO = 4;
 
 function GridServidores() {
     const [nodes, setNodes] = useState([]);
@@ -20,12 +20,11 @@ function GridServidores() {
     const [gameMessage, setGameMessage] = useState("Bem-vindo ao Firewall! Clique em 'Próxima Rodada'.");
     const [isModalAberto, setIsModalAberto] = useState(false);
     const [statusJogo, setStatusJogo] = useState('em_andamento');
-    const [acoesRestantes, setAcoesRestantes] = useState(ACOES_POR_TURNO); // NOVO ESTADO
+    const [acoesRestantes, setAcoesRestantes] = useState(ACOES_POR_TURNO);
+    const [acoesBonus, setAcoesBonus] = useState(0);
 
-    // Função para avançar para a próxima rodada (agora também reseta as ações)
     const handleProximaRodada = useCallback(() => {
         if (statusJogo !== 'em_andamento') return;
-
         const novaRodada = rodadaAtual + 1;
         setRodadaAtual(novaRodada);
         
@@ -37,24 +36,19 @@ function GridServidores() {
             setStatusJogo(resultadoDaRodada.statusJogo);
         }
 
-        setAcoesRestantes(ACOES_POR_TURNO); // Reseta as ações para o próximo turno
+        setAcoesRestantes(ACOES_POR_TURNO + acoesBonus);
+        setAcoesBonus(0);
         setIdNodeSelecionado(null);
-    }, [nodes, rodadaAtual, statusJogo]);
+    }, [nodes, rodadaAtual, statusJogo, acoesBonus]);
 
-    // useEffect para avançar a rodada automaticamente quando as ações acabam
     useEffect(() => {
         if (acoesRestantes <= 0 && statusJogo === 'em_andamento') {
             setGameMessage("Sem ações restantes. Avançando para a próxima rodada...");
-            // Um pequeno delay para o jogador ver o resultado da última ação
-            const timeoutId = setTimeout(() => {
-                handleProximaRodada();
-            }, 1500);
-
+            const timeoutId = setTimeout(() => handleProximaRodada(), 1500);
             return () => clearTimeout(timeoutId);
         }
     }, [acoesRestantes, statusJogo, handleProximaRodada]);
 
-    // Função para carregar/reiniciar o estado inicial do jogo
     const carregarEstadoInicial = useCallback(() => {
         setNodes(inicializarEstadoJogo());
         setRodadaAtual(0);
@@ -62,7 +56,8 @@ function GridServidores() {
         setGameMessage("Jogo reiniciado. Você tem 4 ações.");
         setIsModalAberto(false);
         setStatusJogo('em_andamento');
-        setAcoesRestantes(ACOES_POR_TURNO); // Reseta as ações ao reiniciar
+        setAcoesRestantes(ACOES_POR_TURNO);
+        setAcoesBonus(0);
     }, []);
 
     useEffect(() => {
@@ -76,91 +71,61 @@ function GridServidores() {
         setGameMessage(`Servidor ${nodeClicado?.nome || id} selecionado. Escolha uma ação.`);
     };
 
-    // Função para executar uma ação do jogador (agora decrementa as ações)
-    const executarAcaoJogador = (novoStatusParaSelecionado) => {
-        if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) {
-            setGameMessage("Não é possível executar a ação. Sem ações restantes ou jogo terminado.");
-            return;
-        }
+    const executarAcaoJogador = (tipoDeAcao) => {
+        if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) return;
         
-        const { nodesAtualizados, mensagemAcao } = aplicarAcaoJogador(nodes, idNodeSelecionado, novoStatusParaSelecionado);
-        setNodes(nodesAtualizados);
-        setGameMessage(mensagemAcao);
+        const resultadoAcao = aplicarAcaoJogador(nodes, idNodeSelecionado, tipoDeAcao);
         
-        setAcoesRestantes(prevAcoes => prevAcoes - 1); // Decrementa o contador de ações
+        setGameMessage(resultadoAcao.mensagemAcao);
 
-        // Verifica condição de vitória por limpeza após a ação
-        const todosSeguros = nodesAtualizados.every(node => node.status === 'seguro');
-        if (todosSeguros && rodadaAtual > 0) {
-            setStatusJogo('vitoria');
-            setGameMessage("AMEAÇAS NEUTRALIZADAS! Todos os sistemas estão seguros.");
+        if (resultadoAcao.nodesAtualizados !== null) {
+            setNodes(resultadoAcao.nodesAtualizados);
+            setAcoesRestantes(prevAcoes => prevAcoes - 1);
+            setAcoesBonus(prevBonus => prevBonus + resultadoAcao.acoesBonus);
+
+            const todosSeguros = resultadoAcao.nodesAtualizados.every(node => node.status === 'seguro' || node.status === 'isolado');
+            if (todosSeguros && rodadaAtual > 0) {
+                setStatusJogo('vitoria');
+                setGameMessage("AMEAÇAS NEUTRALIZADAS! Todos os sistemas estão seguros.");
+            }
         }
     };
     
-    const handleReiniciarClick = () => {
-        setIsModalAberto(true);
-    };
+    const handleReiniciarClick = () => setIsModalAberto(true);
 
     const servidoresComprometidos = calcularServidoresComprometidos(nodes);
+    const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
 
     return (
         <>
-            <ModalConfirmacao
-                estaAberto={isModalAberto}
-                mensagem="Tem a certeza de que deseja reiniciar o jogo? Todo o progresso será perdido."
-                aoConfirmar={carregarEstadoInicial}
-                aoCancelar={() => setIsModalAberto(false)}
-            />
-
-            <TelaFimDeJogo 
-                status={statusJogo} 
-                rodadaFinal={rodadaAtual} 
-                aoReiniciar={carregarEstadoInicial} 
-            />
+            <ModalConfirmacao estaAberto={isModalAberto} mensagem="Tem a certeza de que deseja reiniciar o jogo?" aoConfirmar={carregarEstadoInicial} aoCancelar={() => setIsModalAberto(false)} />
+            <TelaFimDeJogo status={statusJogo} rodadaFinal={rodadaAtual} aoReiniciar={carregarEstadoInicial} />
 
             <div className={styles.infoJogo}>
-                <p>Rodada Atual: <span className={styles.infoValor}>{rodadaAtual}</span></p>
-                <p>Ações Restantes: <span className={styles.infoValor}>{acoesRestantes}</span></p>
+                <p>Rodada: <span className={styles.infoValor}>{rodadaAtual}</span></p>
+                <p>Ações: <span className={styles.infoValor}>{acoesRestantes}</span> {acoesBonus > 0 && <span className={styles.acoesBonus}>(+{acoesBonus})</span>}</p>
                 <p className={servidoresComprometidos > 0 ? styles.alertaComprometidos : ''}>
-                    Servidores Comprometidos: <span className={styles.infoValor}>{servidoresComprometidos} / {TOTAL_NOS}</span>
+                    Comprometidos: <span className={styles.infoValor}>{servidoresComprometidos} / {TOTAL_NOS}</span>
                 </p>
             </div>
 
-            <div className={styles.gameMessageArea}>
-                <p>{gameMessage}</p>
-            </div>
+            <div className={styles.gameMessageArea}><p>{gameMessage}</p></div>
 
             <div className={styles.containerGridServidores}>
-                {nodes.map(node => (
-                    <NodeServidor
-                        key={node.id}
-                        id={node.id}
-                        nome={node.nome}
-                        status={node.status}
-                        estaSelecionado={node.id === idNodeSelecionado}
-                        aoClicarNoNode={handleNodeClick}
-                    />
-                ))}
+                {nodes.map(node => <NodeServidor key={node.id} {...node} estaSelecionado={node.id === idNodeSelecionado} aoClicarNoNode={handleNodeClick} />)}
             </div>
 
             <div className={styles.controlesJogo}>
-                <button 
-                    onClick={handleProximaRodada} 
-                    className={styles.botaoRodada}
-                    disabled={statusJogo !== 'em_andamento' || acoesRestantes <= 0}
-                >
-                    Terminar Turno
-                </button>
-                <button onClick={handleReiniciarClick} className={styles.botaoReset}>
-                    Reiniciar Jogo
-                </button>
+                <button onClick={handleProximaRodada} className={styles.botaoRodada} disabled={statusJogo !== 'em_andamento' || acoesRestantes <= 0}>Terminar Turno</button>
+                <button onClick={handleReiniciarClick} className={styles.botaoReset}>Reiniciar Jogo</button>
             </div>
 
             {idNodeSelecionado !== null && statusJogo === 'em_andamento' && (
                 <div className={styles.controlesNode}>
-                    <p>Ações para {nodes.find(n => n.id === idNodeSelecionado)?.nome || ''}:</p>
-                    <button onClick={() => executarAcaoJogador('seguro')} disabled={acoesRestantes <= 0}>Marcar como Seguro</button>
-                    <button onClick={() => executarAcaoJogador('isolado')} disabled={acoesRestantes <= 0}>Isolar Servidor</button>
+                    <p>Ações para {nodeSelecionado?.nome || ''}:</p>
+                    <button onClick={() => executarAcaoJogador('instalarFirewall')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque'}>Instalar Firewall</button>
+                    <button onClick={() => executarAcaoJogador('isolar')} disabled={acoesRestantes <= 0 || !['seguro', 'sobAtaque'].includes(nodeSelecionado?.status)}>Isolar Servidor</button>
+                    <button onClick={() => executarAcaoJogador('analisar')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque'}>Analisar Ameaça</button>
                 </div>
             )}
         </>

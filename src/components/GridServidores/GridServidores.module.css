@@ -38,6 +38,12 @@
     font-weight: bold;
 }
 
+.acoesBonus {
+    color: var(--cor-isolado);
+    font-weight: bold;
+    margin-left: 5px;
+}
+
 .alertaComprometidos {
     color: var(--cor-comprometido);
     font-weight: bold;
