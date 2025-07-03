@@ -12,7 +12,7 @@ import {
     isDDoSAnalisadoAtivo
 } from '../LogicaJogo/motorJogo';
 
-const ACOES_POR_TURNO_BASE = 4;
+const ACOES_POR_TURNO_BASE = 3;
 
 function GridServidores() {
     const [nodes, setNodes] = useState([]);
@@ -22,6 +22,7 @@ function GridServidores() {
     const [isModalAberto, setIsModalAberto] = useState(false);
     const [statusJogo, setStatusJogo] = useState('em_andamento');
     const [acoesRestantes, setAcoesRestantes] = useState(ACOES_POR_TURNO_BASE);
+    const [acoesBonusProximaRodada, setAcoesBonusProximaRodada] = useState(0);
 
     const ddosAtivo = isDDoSAnalisadoAtivo(nodes);
     const acoesPorTurno = ACOES_POR_TURNO_BASE - (ddosAtivo ? 1 : 0);
@@ -40,9 +41,10 @@ function GridServidores() {
         }
 
         const ddosEstaAtivo = isDDoSAnalisadoAtivo(resultadoDaRodada.nodesAtualizados);
-        setAcoesRestantes(ACOES_POR_TURNO_BASE - (ddosEstaAtivo ? 1 : 0));
+        setAcoesRestantes(ACOES_POR_TURNO_BASE - (ddosEstaAtivo ? 1 : 0) + acoesBonusProximaRodada);
+        setAcoesBonusProximaRodada(0);
         setIdNodeSelecionado(null);
-    }, [nodes, rodadaAtual, statusJogo]);
+    }, [nodes, rodadaAtual, statusJogo, acoesBonusProximaRodada]);
 
     useEffect(() => {
         if (acoesRestantes <= 0 && statusJogo === 'em_andamento') {
@@ -56,10 +58,11 @@ function GridServidores() {
         setNodes(inicializarEstadoJogo());
         setRodadaAtual(0);
         setIdNodeSelecionado(null);
-        setGameMessage("Jogo reiniciado. Você tem 4 ações.");
+        setGameMessage("Jogo reiniciado. Você tem 3 ações.");
         setIsModalAberto(false);
         setStatusJogo('em_andamento');
         setAcoesRestantes(ACOES_POR_TURNO_BASE);
+        setAcoesBonusProximaRodada(0);
     }, []);
 
     useEffect(() => {
@@ -77,11 +80,13 @@ function GridServidores() {
         if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) return;
         
         const resultadoAcao = aplicarAcaoJogador(nodes, idNodeSelecionado, tipoDeAcao);
+        
         setGameMessage(resultadoAcao.mensagemAcao);
 
         if (resultadoAcao.nodesAtualizados !== null) {
             setNodes(resultadoAcao.nodesAtualizados);
             setAcoesRestantes(prevAcoes => prevAcoes - 1);
+            setAcoesBonusProximaRodada(prevBonus => prevBonus + resultadoAcao.acoesBonus);
 
             if (rodadaAtual > 0 && resultadoAcao.nodesAtualizados.every(node => node.status === 'seguro' || node.status === 'isolado')) {
                 setStatusJogo('vitoria');
@@ -95,7 +100,7 @@ function GridServidores() {
     const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
 
     const renderAcoesDisponiveis = () => {
-        if (!nodeSelecionado || acoesRestantes <= 0) return null;
+        if (!nodeSelecionado) return null;
 
         if (nodeSelecionado.status === 'sobAtaque') {
             if (!nodeSelecionado.ameacaAnalisada) {
@@ -124,6 +129,7 @@ function GridServidores() {
             <div className={styles.infoJogo}>
                 <p>Rodada: <span className={styles.infoValor}>{rodadaAtual}</span></p>
                 <p>Ações: <span className={styles.infoValor}>{acoesRestantes}</span> / {acoesPorTurno}</p>
+                <p>Bónus Próx. Rodada: <span className={styles.infoValor}>{acoesBonusProximaRodada}</span></p>
                 <p className={servidoresComprometidos > 0 ? styles.alertaComprometidos : ''}>
                     Comprometidos: <span className={styles.infoValor}>{servidoresComprometidos} / {TOTAL_NOS}</span>
                 </p>
@@ -141,7 +147,7 @@ function GridServidores() {
                 <button onClick={handleReiniciarClick} className={styles.botaoReset}>Reiniciar Jogo</button>
             </div>
 
-            {idNodeSelecionado !== null && statusJogo === 'em_andamento' && (
+            {idNodeSelecionado !== null && statusJogo === 'em_andamento' && acoesRestantes > 0 && (
                 <div className={styles.controlesNode}>
                     <p>Ações para {nodeSelecionado?.nome || ''}:</p>
                     {renderAcoesDisponiveis()}

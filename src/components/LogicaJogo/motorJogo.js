@@ -53,20 +53,27 @@ export function processarProximaRodada(nodesAtuais, rodadaAtualNumero) {
     let statusJogo = 'em_andamento';
     let nosIntermediarios = JSON.parse(JSON.stringify(nodesAtuais));
 
-    const nosParaVerificarVirus = [...nosIntermediarios];
-    nosParaVerificarVirus.forEach(nodeOriginal => {
+    const novasInfeccoesDeVirus = [];
+    nosIntermediarios.forEach(nodeOriginal => {
         if (nodeOriginal.tipoAtaque === 'virus' && nodeOriginal.status === 'sobAtaque') {
             const vizinhos = ADJACENCIAS[nodeOriginal.id];
             vizinhos.forEach(vizinhoId => {
                 const vizinhoAlvo = nosIntermediarios.find(n => n.id === vizinhoId);
                 if (vizinhoAlvo && vizinhoAlvo.status === 'seguro') {
-                    mensagensDaRodada.push(`VÍRUS: ${nodeOriginal.nome} está a infetar ${vizinhoAlvo.nome}!`);
-                    vizinhoAlvo.status = 'sobAtaque';
-                    vizinhoAlvo.tipoAtaque = 'virus';
-                    vizinhoAlvo.ameacaAnalisada = false;
-                    vizinhoAlvo.rodadasSobAtaque = 1;
+                    novasInfeccoesDeVirus.push({ id: vizinhoId, nomeOrigem: nodeOriginal.nome });
                 }
             });
+        }
+    });
+
+    novasInfeccoesDeVirus.forEach(infeccao => {
+        const noParaInfetar = nosIntermediarios.find(n => n.id === infeccao.id);
+        if (noParaInfetar && noParaInfetar.status === 'seguro') {
+            mensagensDaRodada.push(`VÍRUS: ${infeccao.nomeOrigem} está a infetar ${noParaInfetar.nome}!`);
+            noParaInfetar.status = 'sobAtaque';
+            noParaInfetar.tipoAtaque = 'virus';
+            noParaInfetar.ameacaAnalisada = false;
+            noParaInfetar.rodadasSobAtaque = 1;
         }
     });
 
@@ -127,48 +134,52 @@ export function processarProximaRodada(nodesAtuais, rodadaAtualNumero) {
 
 export function aplicarAcaoJogador(nodesAtuais, idNodeAlvo, tipoDeAcao) {
     const nodeAlvo = nodesAtuais.find(n => n.id === idNodeAlvo);
-    if (!nodeAlvo) return { nodesAtualizados: null, mensagemAcao: "Erro: Nó alvo não encontrado." };
+    if (!nodeAlvo) return { nodesAtualizados: null, mensagemAcao: "Erro: Nó alvo não encontrado.", acoesBonus: 0 };
 
     let mensagemAcao = "";
+    let acoesBonus = 0;
     let nodesAtualizados = JSON.parse(JSON.stringify(nodesAtuais));
     const noModificado = nodesAtualizados.find(n => n.id === idNodeAlvo);
 
     if (tipoDeAcao !== 'analisar' && !nodeAlvo.ameacaAnalisada && nodeAlvo.status === 'sobAtaque') {
-        return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: É preciso analisar a ameaça em ${nodeAlvo.nome} antes de agir.` };
+        return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: É preciso analisar a ameaça em ${nodeAlvo.nome} antes de agir.`, acoesBonus: 0 };
     }
 
     switch (tipoDeAcao) {
         case 'instalarFirewall':
             if (nodeAlvo.tipoAtaque === 'virus') {
-                mensagemAcao = `AÇÃO: Firewall instalado em ${nodeAlvo.nome}. Vírus neutralizado.`;
+                mensagemAcao = `AÇÃO: Firewall instalado em ${nodeAlvo.nome}. Vírus neutralizado. Você ganhou 1 ação bónus para a próxima rodada!`;
                 noModificado.status = 'seguro';
                 noModificado.tipoAtaque = 'nenhum';
                 noModificado.ameacaAnalisada = false;
+                acoesBonus = 1;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Firewall é eficaz apenas contra Vírus.` };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Firewall é eficaz apenas contra Vírus.`, acoesBonus: 0 };
             }
             break;
 
         case 'isolarServidor':
             if (nodeAlvo.tipoAtaque === 'ddos') {
-                mensagemAcao = `AÇÃO: ${nodeAlvo.nome} foi isolado da rede. Ataque DDoS contido.`;
+                mensagemAcao = `AÇÃO: ${nodeAlvo.nome} foi isolado da rede. Ataque DDoS contido. Você ganhou 1 ação bónus para a próxima rodada!`;
                 noModificado.status = 'isolado';
                 noModificado.rodadasIsolado = DURACAO_ISOLAMENTO;
                 noModificado.tipoAtaque = 'nenhum';
                 noModificado.ameacaAnalisada = false;
+                acoesBonus = 1;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Isolar é eficaz apenas contra DDoS.` };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Isolar é eficaz apenas contra DDoS.`, acoesBonus: 0 };
             }
             break;
 
         case 'neutralizarRansomware':
             if (nodeAlvo.tipoAtaque === 'ransomware') {
-                mensagemAcao = `AÇÃO: Ameaça de Ransomware em ${nodeAlvo.nome} foi neutralizada antes do comprometimento.`;
+                mensagemAcao = `AÇÃO: Ameaça de Ransomware em ${nodeAlvo.nome} foi neutralizada. Você ganhou 1 ação bónus para a próxima rodada!`;
                 noModificado.status = 'seguro';
                 noModificado.tipoAtaque = 'nenhum';
                 noModificado.ameacaAnalisada = false;
+                acoesBonus = 1;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Esta ação é eficaz apenas contra Ransomware.` };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Esta ação é eficaz apenas contra Ransomware.`, acoesBonus: 0 };
             }
             break;
 
@@ -177,15 +188,15 @@ export function aplicarAcaoJogador(nodesAtuais, idNodeAlvo, tipoDeAcao) {
                 noModificado.ameacaAnalisada = true;
                 mensagemAcao = `ANÁLISE: A ameaça em ${nodeAlvo.nome} é um ${nodeAlvo.tipoAtaque.toUpperCase()}!`;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Só é possível analisar ameaças novas e desconhecidas.` };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Só é possível analisar ameaças novas e desconhecidas.`, acoesBonus: 0 };
             }
             break;
 
         default:
-            return { nodesAtualizados: null, mensagemAcao: "Erro: Ação desconhecida." };
+            return { nodesAtualizados: null, mensagemAcao: "Erro: Ação desconhecida.", acoesBonus: 0 };
     }
 
-    return { nodesAtualizados, mensagemAcao };
+    return { nodesAtualizados, mensagemAcao, acoesBonus };
 }
 
 export function calcularServidoresComprometidos(nodes) {
