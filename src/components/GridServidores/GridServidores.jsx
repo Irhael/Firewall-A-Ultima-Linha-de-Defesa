@@ -25,6 +25,19 @@ function GridServidores() {
 
     const handleProximaRodada = useCallback(() => {
         if (statusJogo !== 'em_andamento') return;
+
+        // --- INÍCIO DO CÓDIGO A ADICIONAR ---
+        if (window.Tone) {
+            window.Tone.start();
+            // Toca um som de "blip" para indicar o início da rodada
+            const synth = new window.Tone.Synth({
+                oscillator: { type: 'sine' },
+                envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 }
+            }).toDestination();
+            synth.triggerAttackRelease("A4", "16n");
+        }
+        // --- FIM DO CÓDIGO A ADICIONAR ---
+
         const novaRodada = rodadaAtual + 1;
         setRodadaAtual(novaRodada);
         
@@ -74,6 +87,12 @@ function GridServidores() {
     const executarAcaoJogador = (tipoDeAcao) => {
         if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) return;
         
+        const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
+        if (nodeSelecionado && nodeSelecionado.tipoAtaque === 'ddos') {
+            setGameMessage(`AÇÃO INVÁLIDA: ${nodeSelecionado.nome} está sob ataque DDoS e não responde a comandos!`);
+            return;
+        }
+
         const resultadoAcao = aplicarAcaoJogador(nodes, idNodeSelecionado, tipoDeAcao);
         
         setGameMessage(resultadoAcao.mensagemAcao);
@@ -95,6 +114,7 @@ function GridServidores() {
 
     const servidoresComprometidos = calcularServidoresComprometidos(nodes);
     const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
+    const acoesBloqueadasPorDDoS = nodeSelecionado?.tipoAtaque === 'ddos';
 
     return (
         <>
@@ -123,9 +143,11 @@ function GridServidores() {
             {idNodeSelecionado !== null && statusJogo === 'em_andamento' && (
                 <div className={styles.controlesNode}>
                     <p>Ações para {nodeSelecionado?.nome || ''}:</p>
-                    <button onClick={() => executarAcaoJogador('instalarFirewall')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque'}>Instalar Firewall</button>
-                    <button onClick={() => executarAcaoJogador('isolar')} disabled={acoesRestantes <= 0 || !['seguro', 'sobAtaque'].includes(nodeSelecionado?.status)}>Isolar Servidor</button>
-                    <button onClick={() => executarAcaoJogador('analisar')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque'}>Analisar Ameaça</button>
+                    {acoesBloqueadasPorDDoS && <p className={styles.alertaDDoS}>AÇÕES BLOQUEADAS POR ATAQUE DDoS</p>}
+                    
+                    <button onClick={() => executarAcaoJogador('instalarFirewall')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || acoesBloqueadasPorDDoS}>Instalar Firewall</button>
+                    <button onClick={() => executarAcaoJogador('isolar')} disabled={acoesRestantes <= 0 || !['seguro', 'sobAtaque'].includes(nodeSelecionado?.status) || acoesBloqueadasPorDDoS}>Isolar Servidor</button>
+                    <button onClick={() => executarAcaoJogador('analisar')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || acoesBloqueadasPorDDoS}>Analisar Ameaça</button>
                 </div>
             )}
         </>
