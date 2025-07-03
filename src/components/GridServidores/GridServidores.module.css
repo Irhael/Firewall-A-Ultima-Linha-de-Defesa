@@ -1,4 +1,4 @@
-containerGridServidores {
+.containerGridServidores {
     display: grid;
     grid-template-columns: repeat(3, minmax(100px, 1fr));
     grid-template-rows: repeat(3, minmax(100px, 1fr));
@@ -34,6 +34,12 @@ containerGridServidores {
 .infoValor {
     color: var(--cor-destaque);
     font-weight: bold;
+}
+
+.acoesBonus {
+    color: var(--cor-isolado);
+    font-weight: bold;
+    margin-left: 5px;
 }
 
 .alertaComprometidos {
