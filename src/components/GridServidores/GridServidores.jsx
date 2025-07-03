@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import NodeServidor from '../NodeServidor/NodeServidor';
 import ModalConfirmacao from '../ModalConfirmacao/ModalConfirmacao';
@@ -21,23 +22,9 @@ function GridServidores() {
     const [isModalAberto, setIsModalAberto] = useState(false);
     const [statusJogo, setStatusJogo] = useState('em_andamento');
     const [acoesRestantes, setAcoesRestantes] = useState(ACOES_POR_TURNO);
-    const [acoesBonus, setAcoesBonus] = useState(0);
 
     const handleProximaRodada = useCallback(() => {
         if (statusJogo !== 'em_andamento') return;
-
-        // --- INÍCIO DO CÓDIGO A ADICIONAR ---
-        if (window.Tone) {
-            window.Tone.start();
-            // Toca um som de "blip" para indicar o início da rodada
-            const synth = new window.Tone.Synth({
-                oscillator: { type: 'sine' },
-                envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 }
-            }).toDestination();
-            synth.triggerAttackRelease("A4", "16n");
-        }
-        // --- FIM DO CÓDIGO A ADICIONAR ---
-
         const novaRodada = rodadaAtual + 1;
         setRodadaAtual(novaRodada);
         
@@ -49,10 +36,9 @@ function GridServidores() {
             setStatusJogo(resultadoDaRodada.statusJogo);
         }
 
-        setAcoesRestantes(ACOES_POR_TURNO + acoesBonus);
-        setAcoesBonus(0);
+        setAcoesRestantes(ACOES_POR_TURNO);
         setIdNodeSelecionado(null);
-    }, [nodes, rodadaAtual, statusJogo, acoesBonus]);
+    }, [nodes, rodadaAtual, statusJogo]);
 
     useEffect(() => {
         if (acoesRestantes <= 0 && statusJogo === 'em_andamento') {
@@ -70,7 +56,6 @@ function GridServidores() {
         setIsModalAberto(false);
         setStatusJogo('em_andamento');
         setAcoesRestantes(ACOES_POR_TURNO);
-        setAcoesBonus(0);
     }, []);
 
     useEffect(() => {
@@ -85,14 +70,14 @@ function GridServidores() {
     };
 
     const executarAcaoJogador = (tipoDeAcao) => {
-        if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) return;
-        
         const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
         if (nodeSelecionado && nodeSelecionado.tipoAtaque === 'ddos') {
             setGameMessage(`AÇÃO INVÁLIDA: ${nodeSelecionado.nome} está sob ataque DDoS e não responde a comandos!`);
             return;
         }
 
+        if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) return;
+        
         const resultadoAcao = aplicarAcaoJogador(nodes, idNodeSelecionado, tipoDeAcao);
         
         setGameMessage(resultadoAcao.mensagemAcao);
@@ -100,12 +85,10 @@ function GridServidores() {
         if (resultadoAcao.nodesAtualizados !== null) {
             setNodes(resultadoAcao.nodesAtualizados);
             setAcoesRestantes(prevAcoes => prevAcoes - 1);
-            setAcoesBonus(prevBonus => prevBonus + resultadoAcao.acoesBonus);
 
             const todosSeguros = resultadoAcao.nodesAtualizados.every(node => node.status === 'seguro' || node.status === 'isolado');
             if (todosSeguros && rodadaAtual > 0) {
                 setStatusJogo('vitoria');
-                setGameMessage("AMEAÇAS NEUTRALIZADAS! Todos os sistemas estão seguros.");
             }
         }
     };
@@ -123,7 +106,7 @@ function GridServidores() {
 
             <div className={styles.infoJogo}>
                 <p>Rodada: <span className={styles.infoValor}>{rodadaAtual}</span></p>
-                <p>Ações: <span className={styles.infoValor}>{acoesRestantes}</span> {acoesBonus > 0 && <span className={styles.acoesBonus}>(+{acoesBonus})</span>}</p>
+                <p>Ações: <span className={styles.infoValor}>{acoesRestantes}</span></p>
                 <p className={servidoresComprometidos > 0 ? styles.alertaComprometidos : ''}>
                     Comprometidos: <span className={styles.infoValor}>{servidoresComprometidos} / {TOTAL_NOS}</span>
                 </p>
@@ -147,7 +130,7 @@ function GridServidores() {
                     
                     <button onClick={() => executarAcaoJogador('instalarFirewall')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || acoesBloqueadasPorDDoS}>Instalar Firewall</button>
                     <button onClick={() => executarAcaoJogador('isolar')} disabled={acoesRestantes <= 0 || !['seguro', 'sobAtaque'].includes(nodeSelecionado?.status) || acoesBloqueadasPorDDoS}>Isolar Servidor</button>
-                    <button onClick={() => executarAcaoJogador('analisar')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || acoesBloqueadasPorDDoS}>Analisar Ameaça</button>
+                    <button onClick={() => executarAcaoJogador('analisar')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || nodeSelecionado?.ameacaAnalisada || acoesBloqueadasPorDDoS}>Analisar Ameaça</button>
                 </div>
             )}
         </>

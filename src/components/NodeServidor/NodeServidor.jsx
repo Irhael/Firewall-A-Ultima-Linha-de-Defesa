@@ -1,17 +1,18 @@
-// src/components/NodeServidor/NodeServidor.jsx
-import React from 'react';
-import styles from './NodeServidor.module.css'; // Usando CSS Modules
 
+import React from 'react';
+import styles from './NodeServidor.module.css';
+import IconeAtaque from '../IconeAtaque/IconeAtaque';
 
 const detalhesStatus = {
     seguro: { icon: '🛡️', label: 'SEGURO', className: styles.seguro },
-    sobAtaque: { icon: '⚠️', label: 'SOB ATAQUE', className: styles.sobAtaque },
+    sobAtaque: { icon: '⚠️', label: 'EM RISCO', className: styles.sobAtaque },
     comprometido: { icon: '☠️', label: 'COMPROMETIDO', className: styles.comprometido },
     isolado: { icon: '🔗', label: 'ISOLADO', className: styles.isolado },
     desconhecido: { icon: '❓', label: 'DESCONHECIDO', className: styles.desconhecido }
 };
 
-function NodeServidor({ id, nome, status, estaSelecionado, aoClicarNoNode }) { // Prop aoClicarNoNode
+
+function NodeServidor({ id, nome, status, tipoAtaque, ameacaAnalisada, estaSelecionado, aoClicarNoNode }) {
     const detalhesAtuais = detalhesStatus[status] || detalhesStatus.desconhecido;
     
     const classesDoNode = `
@@ -22,6 +23,8 @@ function NodeServidor({ id, nome, status, estaSelecionado, aoClicarNoNode }) { /
 
     return (
         <div className={classesDoNode} onClick={() => aoClicarNoNode(id)}>
+            <IconeAtaque tipo={tipoAtaque} analisado={ameacaAnalisada} />
+            
             <div className={styles.idDoNode}>{nome || `SRV-${String(id).padStart(2, '0')}`}</div>
             <div className={styles.iconeStatusNode}>{detalhesAtuais.icon}</div>
             <div className={styles.labelStatusNode}>{detalhesAtuais.label}</div>

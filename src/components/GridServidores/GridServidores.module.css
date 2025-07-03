@@ -1,4 +1,3 @@
-
 .containerGridServidores {
     display: grid;
     grid-template-columns: repeat(3, minmax(100px, 1fr));
@@ -7,7 +6,7 @@
     width: 100%;
     max-width: 600px;
     aspect-ratio: 1 / 1;
-    border: 2px solid var(--cor-borda); 
+    border: 2px solid var(--cor-borda);
     padding: 15px;
     background-color: rgba(0,0,0,0.1);
     border-radius: 8px;
@@ -46,6 +45,19 @@
 .alertaComprometidos {
     color: var(--cor-comprometido);
     font-weight: bold;
+}
+
+.alertaDDoS {
+    color: var(--cor-ataque);
+    font-weight: bold;
+    margin-bottom: 10px;
+    animation: pulseDDoS 1s infinite;
+}
+
+@keyframes pulseDDoS {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
 }
 
 .gameMessageArea {

@@ -1,0 +1,37 @@
+
+.containerIcone {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 2px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 3px black;
+}
+
+
+.virus {
+    color: #9400d3;
+}
+
+.ransomware {
+    color: #ff4500; 
+}
+
+.ddos {
+    color: #1e90ff; 
+}
+
+
+.desconhecido {
+    color: #ffffff;
+    animation: pulseUnknown 2s infinite ease-in-out;
+}
+
+@keyframes pulseUnknown {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

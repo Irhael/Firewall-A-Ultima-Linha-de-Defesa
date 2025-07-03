@@ -1,15 +1,25 @@
-// --- Constantes de Balanceamento do Jogo ---
+
+
 export const TOTAL_NOS = 9;
 export const MAX_NOVOS_ATAQUES_POR_RODADA = 2;
-export const CHANCE_DE_ATAQUE_EM_ALVO = 0.75;
+export const CHANCE_DE_ATAQUE_EM_ALVO = 0.8;
 export const RODADAS_PARA_COMPROMETER = 2;
 export const RODADAS_PARA_VITORIA = 15;
 export const MAX_SERVIDORES_COMPROMETIDOS = 4;
-export const DURACAO_ISOLAMENTO = 3; // Servidor fica isolado por 3 rodadas (a atual + 2)
+export const DURACAO_ISOLAMENTO = 3;
 
-/**
- * Cria e retorna o estado inicial do tabuleiro do jogo.
- */
+const TIPOS_DE_ATAQUE = [
+    { tipo: 'virus', probabilidade: 0.5 },
+    { tipo: 'ransomware', probabilidade: 0.2 },
+    { tipo: 'ddos', probabilidade: 0.3 },
+];
+
+const ADJACENCIAS = {
+    1: [2, 4], 2: [1, 3, 5], 3: [2, 6],
+    4: [1, 5, 7], 5: [2, 4, 6, 8], 6: [3, 5, 9],
+    7: [4, 8], 8: [5, 7, 9], 9: [6, 8],
+};
+
 export function inicializarEstadoJogo() {
     const nodesIniciais = [];
     for (let i = 1; i <= TOTAL_NOS; i++) {
@@ -17,109 +27,127 @@ export function inicializarEstadoJogo() {
             id: i,
             nome: `SRV-${String(i).padStart(2, '0')}`,
             status: 'seguro',
+            tipoAtaque: 'nenhum',
+            ameacaAnalisada: false,
             rodadasSobAtaque: 0,
-            rodadasIsolado: 0, // NOVO: Contador para a duração do isolamento
+            rodadasIsolado: 0,
         });
     }
     return nodesIniciais;
 }
 
-/**
- * Processa a lógica de uma nova rodada.
- */
+function sortearTipoAtaque() {
+    const rand = Math.random();
+    let acumulado = 0;
+    for (const ataque of TIPOS_DE_ATAQUE) {
+        acumulado += ataque.probabilidade;
+        if (rand < acumulado) {
+            return ataque.tipo;
+        }
+    }
+    return TIPOS_DE_ATAQUE[0].tipo;
+}
+
 export function processarProximaRodada(nodesAtuais, rodadaAtualNumero) {
     let mensagensDaRodada = [`--- Rodada ${rodadaAtualNumero} Iniciada ---`];
     let statusJogo = 'em_andamento';
-
     let nosIntermediarios = JSON.parse(JSON.stringify(nodesAtuais));
 
-    // 1. Fase de Manutenção de Status (Evolução e Contagem de Isolamento)
+    const nosParaVerificarVirus = [...nosIntermediarios];
+    nosParaVerificarVirus.forEach(nodeOriginal => {
+        if (nodeOriginal.tipoAtaque === 'virus' && nodeOriginal.status === 'sobAtaque') {
+            const vizinhos = ADJACENCIAS[nodeOriginal.id];
+            vizinhos.forEach(vizinhoId => {
+                const vizinhoAlvo = nosIntermediarios.find(n => n.id === vizinhoId);
+                if (vizinhoAlvo && vizinhoAlvo.status === 'seguro') {
+                    mensagensDaRodada.push(`VÍRUS: ${nodeOriginal.nome} está a infetar ${vizinhoAlvo.nome}!`);
+                    vizinhoAlvo.status = 'sobAtaque';
+                    vizinhoAlvo.tipoAtaque = 'virus';
+                    vizinhoAlvo.ameacaAnalisada = false;
+                    vizinhoAlvo.rodadasSobAtaque = 1;
+                }
+            });
+        }
+    });
+
     nosIntermediarios.forEach(node => {
-        // Evolução de 'sobAtaque' para 'comprometido'
         if (node.status === 'sobAtaque') {
             node.rodadasSobAtaque += 1;
             if (node.rodadasSobAtaque >= RODADAS_PARA_COMPROMETER) {
                 mensagensDaRodada.push(`ALERTA: ${node.nome} foi COMPROMETIDO!`);
                 node.status = 'comprometido';
+                node.tipoAtaque = 'nenhum';
+                node.ameacaAnalisada = false;
                 node.rodadasSobAtaque = 0;
             }
         }
-        // Contagem regressiva do isolamento
         if (node.status === 'isolado') {
             node.rodadasIsolado -= 1;
             if (node.rodadasIsolado <= 0) {
-                mensagensDaRodada.push(`INFO: A proteção de ${node.nome} expirou. Agora está seguro.`);
+                mensagensDaRodada.push(`INFO: A proteção de ${node.nome} expirou.`);
                 node.status = 'seguro';
             }
         }
     });
 
-    // 2. Fase de Novos Ataques (RF03)
-    // Servidores isolados ou comprometidos não podem ser atacados
-    let nosDisponiveisParaAtaque = nosIntermediarios.filter(node => node.status === 'seguro');
+    let nosDisponiveisParaAtaque = nosIntermediarios.filter(n => n.status === 'seguro');
     nosDisponiveisParaAtaque.sort(() => 0.5 - Math.random());
-
     let ataquesRealizadosNestaRodada = 0;
+
     for (const alvo of nosDisponiveisParaAtaque) {
         if (ataquesRealizadosNestaRodada >= MAX_NOVOS_ATAQUES_POR_RODADA) break;
         if (Math.random() < CHANCE_DE_ATAQUE_EM_ALVO) {
             const noParaAtacar = nosIntermediarios.find(n => n.id === alvo.id);
             if (noParaAtacar) {
-                mensagensDaRodada.push(`ATAQUE: Novo ataque detectado em ${noParaAtacar.nome}!`);
-                noParaAtacar.status = 'sobAtaque';
-                noParaAtacar.rodadasSobAtaque = 1;
+                const tipoAtaqueSorteado = sortearTipoAtaque();
                 ataquesRealizadosNestaRodada++;
+                noParaAtacar.tipoAtaque = tipoAtaqueSorteado;
+                noParaAtacar.ameacaAnalisada = false;
+
+                if (tipoAtaqueSorteado === 'ransomware') {
+                    mensagensDaRodada.push(`RANSOMWARE: ${noParaAtacar.nome} foi instantaneamente COMPROMETIDO!`);
+                    noParaAtacar.status = 'comprometido';
+                    noParaAtacar.tipoAtaque = 'nenhum';
+                } else {
+                    mensagensDaRodada.push(`ATAQUE: Ameaça desconhecida detectada em ${noParaAtacar.nome}!`);
+                    noParaAtacar.status = 'sobAtaque';
+                    noParaAtacar.rodadasSobAtaque = 1;
+                }
             }
         }
-    }
-
-    if (ataquesRealizadosNestaRodada === 0 && nosDisponiveisParaAtaque.length > 0) {
-        mensagensDaRodada.push("Nenhum novo ataque direto nesta rodada.");
     }
     
     const nodesAtualizados = nosIntermediarios;
 
-    // 3. Verificação de Fim de Jogo
     if (calcularServidoresComprometidos(nodesAtualizados) >= MAX_SERVIDORES_COMPROMETIDOS) {
         statusJogo = 'derrota';
-        mensagensDaRodada.push("FALHA CRÍTICA DO SISTEMA! A rede foi perdida.");
     } else if (rodadaAtualNumero >= RODADAS_PARA_VITORIA) {
         statusJogo = 'vitoria';
-        mensagensDaRodada.push("PROTOCOLO DE DEFESA BEM-SUCEDIDO! A rede está estável.");
-    } else if (nodesAtualizados.every(node => node.status === 'seguro' || node.status === 'isolado')) {
+    } else if (nodesAtualizados.every(n => n.status === 'seguro' || n.status === 'isolado')) {
         statusJogo = 'vitoria';
-        mensagensDaRodada.push("AMEAÇAS NEUTRALIZADAS! Todos os sistemas estão seguros.");
     }
 
     return { nodesAtualizados, mensagensDaRodada, statusJogo };
 }
 
-/**
- * Aplica uma ação específica do jogador a um nó.
- * @param {Array<Object>} nodesAtuais - O estado atual de todos os nós.
- * @param {number} idNodeAlvo - O ID do nó que sofrerá a ação.
- * @param {string} tipoDeAcao - O tipo de ação a ser executada (ex: 'instalarFirewall', 'isolar', 'analisar').
- * @returns {{nodesAtualizados: Array<Object>|null, mensagemAcao: string, acoesBonus: number}} Objeto com o novo estado, mensagem e ações bónus. Retorna null para nós se a ação for inválida.
- */
 export function aplicarAcaoJogador(nodesAtuais, idNodeAlvo, tipoDeAcao) {
     const nodeAlvo = nodesAtuais.find(n => n.id === idNodeAlvo);
-    if (!nodeAlvo) {
-        return { nodesAtualizados: null, mensagemAcao: "Erro: Nó alvo não encontrado.", acoesBonus: 0 };
-    }
+    if (!nodeAlvo) return { nodesAtualizados: null, mensagemAcao: "Erro: Nó alvo não encontrado." };
 
     let mensagemAcao = "";
-    let acoesBonus = 0;
-    let nodesAtualizados = JSON.parse(JSON.stringify(nodesAtuais)); // Cria cópia para modificar
+    let nodesAtualizados = JSON.parse(JSON.stringify(nodesAtuais));
 
     switch (tipoDeAcao) {
         case 'instalarFirewall':
             if (nodeAlvo.status === 'sobAtaque') {
                 const noModificado = nodesAtualizados.find(n => n.id === idNodeAlvo);
+                mensagemAcao = `AÇÃO: Firewall instalado em ${nodeAlvo.nome}. Ameaça (${nodeAlvo.tipoAtaque}) neutralizada.`;
                 noModificado.status = 'seguro';
+                noModificado.tipoAtaque = 'nenhum';
+                noModificado.ameacaAnalisada = false;
                 noModificado.rodadasSobAtaque = 0;
-                mensagemAcao = `AÇÃO: Firewall instalado em ${nodeAlvo.nome}. Ameaça neutralizada.`;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Só é possível instalar firewall em servidores sob ataque.`, acoesBonus: 0 };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Firewall só pode ser instalado em servidores sob ataque.` };
             }
             break;
 
@@ -128,28 +156,30 @@ export function aplicarAcaoJogador(nodesAtuais, idNodeAlvo, tipoDeAcao) {
                 const noModificado = nodesAtualizados.find(n => n.id === idNodeAlvo);
                 noModificado.status = 'isolado';
                 noModificado.rodadasIsolado = DURACAO_ISOLAMENTO;
+                noModificado.tipoAtaque = 'nenhum';
+                noModificado.ameacaAnalisada = false;
                 noModificado.rodadasSobAtaque = 0;
-                mensagemAcao = `AÇÃO: ${nodeAlvo.nome} foi isolado e está protegido por ${DURACAO_ISOLAMENTO-1} rodada(s).`;
+                mensagemAcao = `AÇÃO: ${nodeAlvo.nome} foi isolado e está protegido.`;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Não é possível isolar um servidor já comprometido ou isolado.`, acoesBonus: 0 };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Não é possível isolar um servidor já comprometido ou isolado.` };
             }
             break;
 
         case 'analisar':
-            if (nodeAlvo.status === 'sobAtaque') {
-                acoesBonus = 1;
-                mensagemAcao = `AÇÃO: Análise de ${nodeAlvo.nome} concluída. Você ganhou 1 ação bónus!`;
-                // A ação não muda o estado do nó, apenas concede o bónus.
+            if (nodeAlvo.status === 'sobAtaque' && !nodeAlvo.ameacaAnalisada) {
+                const noModificado = nodesAtualizados.find(n => n.id === idNodeAlvo);
+                noModificado.ameacaAnalisada = true;
+                mensagemAcao = `ANÁLISE: A ameaça em ${nodeAlvo.nome} é um ${nodeAlvo.tipoAtaque.toUpperCase()}!`;
             } else {
-                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Só é possível analisar servidores sob ataque.`, acoesBonus: 0 };
+                return { nodesAtualizados: null, mensagemAcao: `AÇÃO INVÁLIDA: Só é possível analisar ameaças novas e desconhecidas.` };
             }
             break;
 
         default:
-            return { nodesAtualizados: null, mensagemAcao: "Erro: Ação desconhecida.", acoesBonus: 0 };
+            return { nodesAtualizados: null, mensagemAcao: "Erro: Ação desconhecida." };
     }
 
-    return { nodesAtualizados, mensagemAcao, acoesBonus };
+    return { nodesAtualizados, mensagemAcao };
 }
 
 export function calcularServidoresComprometidos(nodes) {
