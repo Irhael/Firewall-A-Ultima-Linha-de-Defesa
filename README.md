@@ -32,7 +32,6 @@ O jogo termina com a **vitória** da equipa se todos os ataques forem contidos c
     * (Outras ações que vocês implementarem) 
 * ** Controlo de Servidores Comprometidos:** Um indicador visual e lógico do quão perto a rede está do colapso. 
 * ** Condições de Vitória e Derrota:** Objetivos claros para o sucesso ou fracasso da equipa. 
-* ** Multiplayer Cooperativo (Planeado):** Suporte para 2 a 4 jogadores trabalhando juntos. 
 * ** Acessível via Navegador:** Jogue em qualquer lugar, a qualquer hora. 
 * ** Código Aberto:** Licenciado sob MIT, incentivando a colaboração e o aprendizado. 
 
