@@ -4,7 +4,7 @@
 
 **Firewall: A Última Linha de Defesa** é um jogo cooperativo 2D baseado em turnos, inspirado na dinâmica do popular jogo *Pandemic*, mas com uma imersiva temática de segurança da informação. Neste desafio, de 2 a 4 jogadores assumem o papel de analistas de cibersegurança de elite, encarregados de proteger a infraestrutura digital crítica de uma grande corporação contra uma onda implacável de ciberataques.
 
-O "mapa" do jogo é uma rede de servidores interconectados, representada por um grid 3x3. A cada rodada, diferentes tipos de ameaças digitais (vírus, ransomware, ataques DDoS, phishing) surgem aleatoriamente, testando a capacidade de resposta e a estratégia da equipa. Os jogadores devem colaborar intensamente, movimentar-se entre os servidores e utilizar ações estratégicas para mitigar as ameaças, instalar firewalls e analisar os perigos.
+O "mapa" do jogo é uma rede de servidores interconectados, representada por um grid 3x3. A cada rodada, diferentes tipos de ameaças digitais (vírus, ransomware, ataques DDoS) surgem aleatoriamente, testando a capacidade de resposta e a estratégia da equipa. Os jogadores devem colaborar intensamente, movimentar-se entre os servidores e utilizar ações estratégicas para mitigar as ameaças, instalar firewalls e analisar os perigos.
 
 O jogo termina com a **vitória** da equipa se todos os ataques forem contidos com sucesso, ou com a **derrota** se um número crítico de servidores for comprometido, levando a rede ao colapso.
 
@@ -37,19 +37,98 @@ O jogo termina com a **vitória** da equipa se todos os ataques forem contidos c
 
 ---
 
-##  Como Jogar (Guia Rápido)
+##  Regras:
 
-1.  **Reúna a sua Equipa:** Forme uma equipa de 2 a 4 analistas de cibersegurança.
-2.  **Navegue pela Rede:** Movimente o seu avatar pelo grid de servidores.
-3.  **Identifique Ameaças:** Observe os servidores que estão sob ataque. Cada tipo de ataque pode ter um comportamento ou impacto diferente.
-4.  **Execute Ações:** Em cada turno, cada jogador pode executar um número limitado de ações para:
-    * **Analisar Ameaças:** Para entender melhor um ataque e planear a contenção.
-    * **Instalar Firewalls:** Para proteger servidores vulneráveis ou limpar os que estão sob ataque leve.
-    * **Isolar Servidores:** Uma medida drástica para impedir a propagação de ataques graves, mas que pode ter consequências.
-5.  **Contenha os Ataques:** Trabalhe em equipa para reduzir o nível de ameaça em todos os servidores.
-6.  **Evite o Colapso:** Não deixe que muitos servidores sejam totalmente comprometidos!
-7.  **Alcance a Vitória:** Contenha todos os ataques ativos e proteja a rede para vencer o jogo.
+A sua missão é proteger a rede corporativa de uma série de ciberataques sofisticados. A seguir estão os protocolos e procedimentos que precisa de dominar para ser bem-sucedido.
 
+Objetivo do Jogo
+A sua equipa vence ou perde em conjunto. A vitória pode ser alcançada de duas formas:
+
+Vitória por Resiliência: Sobreviva por 15 rodadas sem que a rede entre em colapso.
+
+Vitória por Limpeza Total: Neutralize todas as ameaças, deixando todos os 9 servidores no estado SEGURO ou ISOLADO (esta condição só é válida após a Rodada 0).
+
+A derrota é imediata se:
+
+Derrota por Colapso da Rede: 4 ou mais servidores ficarem no estado COMPROMETIDO ao mesmo tempo.
+
+O Seu Turno
+Cada rodada representa um turno de trabalho. No seu turno, você tem um número limitado de ações para responder às crises.
+
+Ações por Turno: Você começa cada turno com 3 Ações.
+
+Fim do Turno: O seu turno termina de duas formas:
+
+Automaticamente: Quando as suas ações chegam a 0.
+
+Manualmente: Clicando no botão "Terminar Turno", caso queira poupar ações (elas não acumulam).
+
+Ação Bónus: Ao neutralizar com sucesso uma ameaça (Vírus, Ransomware ou DDoS), você ganha +1 Ação Bónus que será adicionada ao total de ações da sua próxima rodada.
+
+As Ameaças Digitais
+A cada rodada, novas ameaças podem surgir. Inicialmente, toda a ameaça é desconhecida e precisa de ser analisada.
+
+Ameaça Desconhecida (❓):
+
+É assim que toda a nova ameaça num servidor EM RISCO aparece.
+
+Você não sabe a sua natureza ou os seus efeitos.
+
+A sua primeira prioridade é usar a ação Analisar Ameaça para descobrir o que está a enfrentar.
+
+Tipos de Ameaça (Após Análise)
+Vírus (🦠):
+
+Efeito: Se um Vírus não for tratado, no início da próxima rodada, ele tentará infetar todos os servidores adjacentes que estiverem SEGUROS, espalhando a ameaça pela rede.
+
+Comprometimento: Se um servidor com Vírus ficar EM RISCO por muito tempo, ele será comprometido e os seus Dados serão Corrompidos (📄).
+
+Solução: Ação Instalar Firewall.
+
+Ransomware (🔒):
+
+Efeito: É uma ameaça de tempo curto. Se não for neutralizado rapidamente (em 1 rodada após surgir), ele compromete o servidor e os Dados são Sequestrados (💰).
+
+Comprometimento: É a única ameaça que resulta em "Dados Sequestrados", exigindo uma ação de recuperação específica que não existe. (Nota: Na versão atual, a ação de "Neutralizar Ransomware" previne isto. Se falhar, o servidor fica comprometido e não pode ser recuperado, aumentando a pressão).
+
+Solução: Ação Neutralizar Ransomware (enquanto está EM RISCO).
+
+DDoS (🚦):
+
+Efeito: Este ataque não danifica o servidor nem o compromete. Em vez disso, ele ataca você, o jogador.
+
+Penalidade Global: Enquanto houver um ataque DDoS analisado e ativo na rede, o seu número total de ações por turno é reduzido em 1. Um alerta global aparecerá para o informar disto.
+
+Solução: Ação Isolar Servidor.
+
+Ações do Analista
+Cada ação custa 1 ponto de ação.
+
+Analisar Ameaça:
+
+Quando usar: É a primeira e única ação que pode ser usada num servidor EM RISCO com uma ameaça desconhecida (❓).
+
+Efeito: Revela o tipo real da ameaça (Vírus, Ransomware ou DDoS), mudando o seu ícone. A mensagem do jogo informará qual ameaça foi descoberta. Após a análise, as ações de defesa específicas ficam disponíveis.
+
+Instalar Firewall (Contra Vírus):
+
+Quando usar: Num servidor EM RISCO que foi analisado e revelou ser um Vírus (🦠).
+
+Efeito: Neutraliza o Vírus e retorna o servidor ao estado SEGURO. Concede +1 Ação Bónus para a próxima rodada.
+
+Isolar Servidor (Contra DDoS):
+
+Quando usar: Num servidor EM RISCO que foi analisado e revelou ser um DDoS (🚦).
+
+Efeito: Neutraliza o ataque DDoS, mudando o estado do servidor para ISOLADO. Um servidor isolado fica protegido de novos ataques por um curto período. Concede +1 Ação Bónus para a próxima rodada.
+
+Neutralizar Ransomware (Contra Ransomware):
+
+Quando usar: Num servidor EM RISCO que foi analisado e revelou ser um Ransomware (🔒).
+
+Efeito: Neutraliza a ameaça de Ransomware antes que ela comprometa o servidor, retornando-o ao estado SEGURO. Concede +1 Ação Bónus para a próxima rodada.
+
+Agora que conhece os protocolos, a segurança da rede está nas suas mãos. Boa sorte.
 ---
 
 ##  Como Configurar e Rodar o Projeto Localmente
