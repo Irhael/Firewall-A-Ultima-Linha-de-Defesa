@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import NodeServidor from '../NodeServidor/NodeServidor';
 import ModalConfirmacao from '../ModalConfirmacao/ModalConfirmacao';
@@ -9,10 +8,11 @@ import {
     inicializarEstadoJogo,
     processarProximaRodada,
     calcularServidoresComprometidos,
-    aplicarAcaoJogador
+    aplicarAcaoJogador,
+    isDDoSAnalisadoAtivo
 } from '../LogicaJogo/motorJogo';
 
-const ACOES_POR_TURNO = 4;
+const ACOES_POR_TURNO_BASE = 4;
 
 function GridServidores() {
     const [nodes, setNodes] = useState([]);
@@ -21,7 +21,10 @@ function GridServidores() {
     const [gameMessage, setGameMessage] = useState("Bem-vindo ao Firewall! Clique em 'Próxima Rodada'.");
     const [isModalAberto, setIsModalAberto] = useState(false);
     const [statusJogo, setStatusJogo] = useState('em_andamento');
-    const [acoesRestantes, setAcoesRestantes] = useState(ACOES_POR_TURNO);
+    const [acoesRestantes, setAcoesRestantes] = useState(ACOES_POR_TURNO_BASE);
+
+    const ddosAtivo = isDDoSAnalisadoAtivo(nodes);
+    const acoesPorTurno = ACOES_POR_TURNO_BASE - (ddosAtivo ? 1 : 0);
 
     const handleProximaRodada = useCallback(() => {
         if (statusJogo !== 'em_andamento') return;
@@ -36,7 +39,8 @@ function GridServidores() {
             setStatusJogo(resultadoDaRodada.statusJogo);
         }
 
-        setAcoesRestantes(ACOES_POR_TURNO);
+        const ddosEstaAtivo = isDDoSAnalisadoAtivo(resultadoDaRodada.nodesAtualizados);
+        setAcoesRestantes(ACOES_POR_TURNO_BASE - (ddosEstaAtivo ? 1 : 0));
         setIdNodeSelecionado(null);
     }, [nodes, rodadaAtual, statusJogo]);
 
@@ -55,7 +59,7 @@ function GridServidores() {
         setGameMessage("Jogo reiniciado. Você tem 4 ações.");
         setIsModalAberto(false);
         setStatusJogo('em_andamento');
-        setAcoesRestantes(ACOES_POR_TURNO);
+        setAcoesRestantes(ACOES_POR_TURNO_BASE);
     }, []);
 
     useEffect(() => {
@@ -70,24 +74,16 @@ function GridServidores() {
     };
 
     const executarAcaoJogador = (tipoDeAcao) => {
-        const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
-        if (nodeSelecionado && nodeSelecionado.tipoAtaque === 'ddos') {
-            setGameMessage(`AÇÃO INVÁLIDA: ${nodeSelecionado.nome} está sob ataque DDoS e não responde a comandos!`);
-            return;
-        }
-
         if (idNodeSelecionado === null || statusJogo !== 'em_andamento' || acoesRestantes <= 0) return;
         
         const resultadoAcao = aplicarAcaoJogador(nodes, idNodeSelecionado, tipoDeAcao);
-        
         setGameMessage(resultadoAcao.mensagemAcao);
 
         if (resultadoAcao.nodesAtualizados !== null) {
             setNodes(resultadoAcao.nodesAtualizados);
             setAcoesRestantes(prevAcoes => prevAcoes - 1);
 
-            const todosSeguros = resultadoAcao.nodesAtualizados.every(node => node.status === 'seguro' || node.status === 'isolado');
-            if (todosSeguros && rodadaAtual > 0) {
+            if (rodadaAtual > 0 && resultadoAcao.nodesAtualizados.every(node => node.status === 'seguro' || node.status === 'isolado')) {
                 setStatusJogo('vitoria');
             }
         }
@@ -97,7 +93,28 @@ function GridServidores() {
 
     const servidoresComprometidos = calcularServidoresComprometidos(nodes);
     const nodeSelecionado = nodes.find(n => n.id === idNodeSelecionado);
-    const acoesBloqueadasPorDDoS = nodeSelecionado?.tipoAtaque === 'ddos';
+
+    const renderAcoesDisponiveis = () => {
+        if (!nodeSelecionado || acoesRestantes <= 0) return null;
+
+        if (nodeSelecionado.status === 'sobAtaque') {
+            if (!nodeSelecionado.ameacaAnalisada) {
+                return <button onClick={() => executarAcaoJogador('analisar')}>Analisar Ameaça</button>;
+            } else {
+                switch (nodeSelecionado.tipoAtaque) {
+                    case 'virus':
+                        return <button onClick={() => executarAcaoJogador('instalarFirewall')}>Instalar Firewall (Vírus)</button>;
+                    case 'ddos':
+                        return <button onClick={() => executarAcaoJogador('isolarServidor')}>Isolar Servidor (DDoS)</button>;
+                    case 'ransomware':
+                        return <button onClick={() => executarAcaoJogador('neutralizarRansomware')}>Neutralizar Ransomware</button>;
+                    default:
+                        return null;
+                }
+            }
+        }
+        return null;
+    };
 
     return (
         <>
@@ -106,12 +123,13 @@ function GridServidores() {
 
             <div className={styles.infoJogo}>
                 <p>Rodada: <span className={styles.infoValor}>{rodadaAtual}</span></p>
-                <p>Ações: <span className={styles.infoValor}>{acoesRestantes}</span></p>
+                <p>Ações: <span className={styles.infoValor}>{acoesRestantes}</span> / {acoesPorTurno}</p>
                 <p className={servidoresComprometidos > 0 ? styles.alertaComprometidos : ''}>
                     Comprometidos: <span className={styles.infoValor}>{servidoresComprometidos} / {TOTAL_NOS}</span>
                 </p>
             </div>
 
+            {ddosAtivo && <div className={styles.globalAlert}>ALERTA GLOBAL: Ataque DDoS ativo está a reduzir o seu número de ações por turno!</div>}
             <div className={styles.gameMessageArea}><p>{gameMessage}</p></div>
 
             <div className={styles.containerGridServidores}>
@@ -126,11 +144,7 @@ function GridServidores() {
             {idNodeSelecionado !== null && statusJogo === 'em_andamento' && (
                 <div className={styles.controlesNode}>
                     <p>Ações para {nodeSelecionado?.nome || ''}:</p>
-                    {acoesBloqueadasPorDDoS && <p className={styles.alertaDDoS}>AÇÕES BLOQUEADAS POR ATAQUE DDoS</p>}
-                    
-                    <button onClick={() => executarAcaoJogador('instalarFirewall')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || acoesBloqueadasPorDDoS}>Instalar Firewall</button>
-                    <button onClick={() => executarAcaoJogador('isolar')} disabled={acoesRestantes <= 0 || !['seguro', 'sobAtaque'].includes(nodeSelecionado?.status) || acoesBloqueadasPorDDoS}>Isolar Servidor</button>
-                    <button onClick={() => executarAcaoJogador('analisar')} disabled={acoesRestantes <= 0 || nodeSelecionado?.status !== 'sobAtaque' || nodeSelecionado?.ameacaAnalisada || acoesBloqueadasPorDDoS}>Analisar Ameaça</button>
+                    {renderAcoesDisponiveis()}
                 </div>
             )}
         </>

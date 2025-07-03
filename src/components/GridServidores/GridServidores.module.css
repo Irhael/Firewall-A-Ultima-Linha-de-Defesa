@@ -6,7 +6,7 @@
     width: 100%;
     max-width: 600px;
     aspect-ratio: 1 / 1;
-    border: 2px solid var(--cor-borda);
+    border: 2px solid var(--cor-borda); 
     padding: 15px;
     background-color: rgba(0,0,0,0.1);
     border-radius: 8px;
@@ -18,7 +18,7 @@
     width: 100%;
     max-width: 600px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-size: 1.1em;
     color: var(--cor-texto);
     background-color: var(--cor-fundo-no);
@@ -36,28 +36,28 @@
     font-weight: bold;
 }
 
-.acoesBonus {
-    color: var(--cor-isolado);
-    font-weight: bold;
-    margin-left: 5px;
-}
-
 .alertaComprometidos {
     color: var(--cor-comprometido);
     font-weight: bold;
 }
 
-.alertaDDoS {
-    color: var(--cor-ataque);
+.globalAlert {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 10px auto;
+    padding: 8px;
+    background-color: var(--cor-ataque);
+    color: var(--cor-fundo);
     font-weight: bold;
-    margin-bottom: 10px;
-    animation: pulseDDoS 1s infinite;
+    text-align: center;
+    border-radius: 4px;
+    animation: pulseDDoS 2s infinite;
 }
 
 @keyframes pulseDDoS {
-    0% { opacity: 1; }
-    50% { opacity: 0.6; }
-    100% { opacity: 1; }
+    0% { opacity: 1; box-shadow: 0 0 5px var(--cor-ataque); }
+    50% { opacity: 0.8; box-shadow: 0 0 15px var(--cor-ataque); }
+    100% { opacity: 1; box-shadow: 0 0 5px var(--cor-ataque); }
 }
 
 .gameMessageArea {

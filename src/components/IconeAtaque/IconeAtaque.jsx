@@ -1,4 +1,3 @@
-
 import React from 'react';
 import styles from './IconeAtaque.module.css';
 
@@ -14,7 +13,6 @@ function IconeAtaque({ tipo, analisado }) {
         return null;
     }
 
-    // Se não foi analisado, mostra o ícone de desconhecido.
     const tipoParaExibir = analisado ? tipo : 'desconhecido';
     const detalhe = detalhesAtaque[tipoParaExibir];
 
@@ -26,3 +24,4 @@ function IconeAtaque({ tipo, analisado }) {
 }
 
 export default IconeAtaque;
+
